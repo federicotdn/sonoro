@@ -71,7 +71,7 @@
     <IncludePath>C:\Users\Fede\Documents\GitHub\sonoro2\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Fede\Documents\GitHub\sonoro2\lib\win-x64;$(LibraryPath)</LibraryPath>
     <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -108,10 +108,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>libsoundio.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>portaudio_x64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <EnablePREfast>true</EnablePREfast>
+      <EnablePREfast>false</EnablePREfast>
+      <WarningLevel>Level3</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -119,8 +120,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\fftw3.h" />
-    <ClInclude Include="include\soundio\endian.h" />
-    <ClInclude Include="include\soundio\soundio.h" />
+    <ClInclude Include="include\pa_asio.h" />
+    <ClInclude Include="include\pa_jack.h" />
+    <ClInclude Include="include\pa_linux_alsa.h" />
+    <ClInclude Include="include\pa_mac_core.h" />
+    <ClInclude Include="include\pa_win_ds.h" />
+    <ClInclude Include="include\pa_win_wasapi.h" />
+    <ClInclude Include="include\pa_win_waveformat.h" />
+    <ClInclude Include="include\pa_win_wdmks.h" />
+    <ClInclude Include="include\pa_win_wmme.h" />
+    <ClInclude Include="include\portaudio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
