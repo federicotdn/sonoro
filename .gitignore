@@ -282,6 +282,7 @@ paket-files/
 .idea/
 *.sln.iml
 
-# sonoro2
+# sonoro
 *.vcxproj.filters
 *.exp
+*.def
