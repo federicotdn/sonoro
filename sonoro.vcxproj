@@ -70,7 +70,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)lib\win-x64;$(LibraryPath)</LibraryPath>
-    <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -130,6 +129,9 @@
     <ClInclude Include="include\pa_win_wdmks.h" />
     <ClInclude Include="include\pa_win_wmme.h" />
     <ClInclude Include="include\portaudio.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

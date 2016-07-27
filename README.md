@@ -1,4 +1,4 @@
-# sonoro2
+# sonoro
 
 Using:
 - PortAudio v19
