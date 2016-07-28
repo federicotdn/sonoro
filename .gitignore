@@ -286,3 +286,4 @@ paket-files/
 *.vcxproj.filters
 *.exp
 *.def
+*.ttf
