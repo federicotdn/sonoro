@@ -57,6 +57,7 @@ void Visualizer::run()
 
 	Scene *currentScene = &menu;
 	bool done = false;
+	bool showHud = true;
 
 	while (!done)
 	{
@@ -67,6 +68,11 @@ void Visualizer::run()
 		bool exitScene = false;
 		bool skipDraw = false;
 		bool escPressed = m_keyboard[SDLK_ESCAPE];
+
+		if (m_keyboard[SDLK_F1])
+		{
+			showHud = !showHud;
+		}
 
 		if (inMenu)
 		{
@@ -98,9 +104,9 @@ void Visualizer::run()
 		}
 
 		Uint32 currentTicks = SDL_GetTicks();
-		int fps = 1000 / (currentTicks - lastTicks);
+		Uint32 difference = currentTicks - lastTicks;
+		int fps = 1000 / (difference != 0 ? difference : 1);
 		lastTicks = currentTicks;
-		m_info.setText(std::to_string(fps));
 
 		SDL_RenderClear(ren);
 
@@ -109,8 +115,12 @@ void Visualizer::run()
 			currentScene->draw();
 		}
 
-		SDL_Texture *infoTex = m_info.getTexture(m_renderContext);
-		SDL_RenderCopy(ren, infoTex, NULL, m_info.getRect());
+		if (showHud)
+		{
+			m_info.setText(std::to_string(fps));
+			SDL_Texture *infoTex = m_info.getTexture(m_renderContext);
+			SDL_RenderCopy(ren, infoTex, NULL, m_info.getRect());
+		}
 
 		SDL_RenderPresent(ren);
 	}
