@@ -69,7 +69,16 @@ int RenderContext::initialize(int win_width, int win_height)
 	return 0;
 }
 
-void RenderContext::getWindowSize(int * w, int * h)
+int RenderContext::getWindowHeight()
 {
-	SDL_GetWindowSize(m_window, w, h);
+	int h;
+	SDL_GetWindowSize(m_window, nullptr, &h);
+	return h;
+}
+
+int RenderContext::getWindowWidth()
+{
+	int w;
+	SDL_GetWindowSize(m_window, &w, nullptr);
+	return w;
 }

@@ -16,7 +16,8 @@ namespace so
 		int initialize(int win_width, int win_height);
 		std::string getError() { return m_error; }
 		SDL_Renderer *getRenderer() { return m_renderer; }
-		void getWindowSize(int *w, int *h);
+		int getWindowHeight();
+		int getWindowWidth();
 	
 	private:
 		SDL_Window *m_window;

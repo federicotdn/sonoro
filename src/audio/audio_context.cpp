@@ -2,19 +2,13 @@
 
 using namespace so;
 
-#define DEFAULT_CHAN_COUNT 1
-#define DEFAULT_SAMPLE_RATE 44100
-#define DEFAULT_FRAMES_PER_BUFFER 64
-
 AudioContext::AudioContext() :
 	m_initialized(false),
 	m_plan(nullptr),
 	m_instream(nullptr),
-	m_channels(DEFAULT_CHAN_COUNT),
-	m_sampleRate(DEFAULT_SAMPLE_RATE),
-	m_framesPerBuffer(DEFAULT_FRAMES_PER_BUFFER),
 	m_inBuf(nullptr),
-	m_outBuf(nullptr)
+	m_outBuf(nullptr),
+	m_processedSamples{0}
 {
 }
 
@@ -23,6 +17,20 @@ AudioContext::~AudioContext()
 	if (!m_initialized)
 	{
 		return;
+	}
+
+	if (m_plan != nullptr)
+	{
+		fftwf_destroy_plan(m_plan);
+	}
+
+	fftwf_free(m_inBuf);
+	fftwf_free(m_outBuf);
+
+	if (m_instream != nullptr)
+	{
+		Pa_CloseStream(m_instream);
+		m_instream = nullptr;
 	}
 
 	Pa_Terminate();
@@ -61,35 +69,153 @@ int AudioContext::initialize()
 		return -1;
 	}
 
+	m_inBuf = (float*)fftwf_malloc(sizeof(float) * DEFAULT_FRAMES_PER_BUFFER);
+	m_outBuf = (fftwf_complex*)fftwf_malloc(sizeof(fftwf_complex) * DEFAULT_OUT_SIZE);
+
+	if (m_inBuf == nullptr || m_outBuf == nullptr)
+	{
+		fftwf_free(m_inBuf);
+		fftwf_free(m_outBuf);
+		m_outBuf = nullptr;
+		m_inBuf = nullptr;
+
+		m_error = "FFTW Malloc returned NULL (out of memory).";
+		Pa_Terminate();
+		return -1;
+	}
+
+	m_plan = fftwf_plan_dft_r2c_1d(DEFAULT_FRAMES_PER_BUFFER, m_inBuf, m_outBuf, FFTW_MEASURE);
+	if (m_plan == nullptr)
+	{
+		fftwf_free(m_inBuf);
+		fftwf_free(m_outBuf);
+		m_outBuf = nullptr;
+		m_inBuf = nullptr;
+
+		m_error = "Unable to create FFTW plan.";
+		Pa_Terminate();
+		return -1;
+	}
+
 	m_initialized = true;
 	return 0;
 }
 
-int AudioContext::setInputDevice(int index, int channels, int sampleRate, int framesPerBuffer)
+int AudioContext::setInputDevice(int index)
 {
 	int deviceCount = Pa_GetDeviceCount();
 	if (deviceCount <= 0 || index < 0 || index > deviceCount - 1)
 	{
+		m_error = "PortAudio: invalid device index.";
 		return -1;
 	}
 
+	if (m_instream != nullptr)
+	{
+		stopStream();
+		Pa_CloseStream(m_instream);
+		m_instream = nullptr;
+	}
+
 	PaStreamParameters inputParameters = { 0 };
+	const PaDeviceInfo *info = Pa_GetDeviceInfo(inputParameters.device);
 
 	inputParameters.device = index;
-	inputParameters.channelCount = channels;
+	inputParameters.channelCount = DEFAULT_CHAN_COUNT;
 	inputParameters.sampleFormat = paFloat32; /* must match FFTW precision */
-	inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultHighInputLatency;
+	inputParameters.suggestedLatency = info->defaultHighInputLatency;
 	inputParameters.hostApiSpecificStreamInfo = nullptr;
 
-	PaStream *stream = nullptr;
+	double sampleRate = info->defaultSampleRate;
 
-	PaError err = Pa_OpenStream(&stream, &inputParameters, nullptr, sampleRate, framesPerBuffer, paClipOff, nullptr, nullptr);
+	PaError err = Pa_OpenStream(&m_instream, &inputParameters, nullptr, sampleRate, DEFAULT_FRAMES_PER_BUFFER, paClipOff, nullptr, nullptr);
 	if (err != paNoError) {
 		m_error = "Unable to open instream: " + std::string(Pa_GetErrorText(err));
+		m_instream = nullptr;
+		return -1;
+	}
+
+	return startStream();
+}
+
+int AudioContext::startStream()
+{
+	if (!m_initialized || m_instream == nullptr)
+	{
+		m_error = "AudioContext is not initialized.";
+		return -1;
+	}
+
+	if (Pa_IsStreamActive(m_instream) == 1)
+	{
+		return 0;
+	}
+
+	PaError err = Pa_StartStream(m_instream);
+	if (err != paNoError) {
+		m_error = "Unable to start instream: " + std::string(Pa_GetErrorText(err));
 		return -1;
 	}
 
 	return 0;
+}
+
+int AudioContext::stopStream()
+{
+	if (!m_initialized || m_instream == nullptr)
+	{
+		m_error = "AudioContext is not initialized.";
+		return -1;
+	}
+
+	if (Pa_IsStreamActive(m_instream) == 0)
+	{
+		return 0;
+	}
+
+	PaError err = Pa_StopStream(m_instream);
+	if (err != paNoError) {
+		m_error = "Unable to stop instream: " + std::string(Pa_GetErrorText(err));
+		return -1;
+	}
+
+	return 0;
+}
+
+void AudioContext::processSamples()
+{
+	if (!m_initialized || m_instream == nullptr || Pa_IsStreamActive(m_instream) == 0)
+	{
+		for (int i = 0; i < DEFAULT_OUT_SIZE; i++)
+		{
+			m_processedSamples[i] = 0;
+		}
+
+		return;
+	}
+
+	// Returns PaInputOverflowed if data was discarded (ignore)
+	Pa_ReadStream(m_instream, m_inBuf, DEFAULT_FRAMES_PER_BUFFER);
+	fftwf_execute(m_plan);
+
+	float maxSample = -1;
+
+	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
+		float real = m_outBuf[i][0];
+		float imag = m_outBuf[i][1];
+
+		float absolute = sqrtf((real * real) + (imag * imag));//10.0f * log10f((real * real) + (imag * imag));
+		m_processedSamples[i] = absolute;
+
+		if (absolute > maxSample)
+		{
+			maxSample = absolute;
+		}
+	}
+
+	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
+		m_processedSamples[i] /= maxSample;
+	}
 }
 
 std::string AudioContext::deviceName(int index)

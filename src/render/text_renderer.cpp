@@ -51,6 +51,11 @@ SDL_Texture *TextRenderer::getTexture(RenderContext &context)
 		return m_texture;
 	}
 
+	if (m_texture != nullptr)
+	{
+		SDL_DestroyTexture(m_texture);
+	}
+
 	SDL_Surface *surface = TTF_RenderUTF8_Blended_Wrapped(m_font, m_text.c_str(), m_color, m_wrapSize);
 	m_texture = SDL_CreateTextureFromSurface(context.getRenderer(), surface);
 

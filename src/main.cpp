@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 	std::cout << "Starting..." << std::endl;
 
 	so::RenderContext renderContext;
-	if (renderContext.initialize(640, 480))
+	if (renderContext.initialize(1024, 768))
 	{
 		std::cerr << "Error intializing render context: " << renderContext.getError() << std::endl;
 		return EXIT_FAILURE;

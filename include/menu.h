@@ -10,7 +10,11 @@ namespace so
 	class Menu : public Scene
 	{
 	public:
-		Menu(RenderContext &renderContext, AudioContext &audioContext, KeyboardMap &keyboard);
+		struct MenuResult {
+			int inputDeviceIndex = 0;
+		};
+
+		Menu(RenderContext &renderContext, AudioContext &audioContext, KeyboardMap &keyboard, MenuResult &result);
 		~Menu();
 
 		int initialize() override;
@@ -21,6 +25,9 @@ namespace so
 		void showInputDevices();
 
 	private:
+		int getKeyboardNum();
+
+		MenuResult &m_menuResult;
 		TextRenderer m_info;
 	};
 }

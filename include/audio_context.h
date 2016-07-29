@@ -7,6 +7,11 @@
 #include <portaudio.h>
 #include <fftw3.h>
 
+#define DEFAULT_CHAN_COUNT 1
+#define DEFAULT_FRAMES_PER_BUFFER 64
+#define DEFAULT_OUT_SIZE ((DEFAULT_FRAMES_PER_BUFFER / 2) + 1)
+#define AUDIO_CONTEXT_DATALEN DEFAULT_OUT_SIZE
+
 namespace so
 {
 	class AudioContext
@@ -17,7 +22,13 @@ namespace so
 
 		int initialize();
 		std::string getError() { return m_error; }
-		int setInputDevice(int index, int channels, int sampleRate, int framesPerBuffer);
+		
+		int setInputDevice(int index);
+		int startStream();
+		int stopStream();
+		void processSamples();
+		float *getSamples() { return m_processedSamples; }
+		
 		std::string deviceName(int index);
 		std::vector<int> inputDeviceList();
 		int getDefaultInputDevice();
@@ -28,14 +39,12 @@ namespace so
 
 		/* PortAudio */
 		PaStream *m_instream;
-		int m_channels;
-		int m_sampleRate;
-		int m_framesPerBuffer;
 
 		/* FFTW */
-		fftw_plan *m_plan;
+		fftwf_plan m_plan;
 		float *m_inBuf;
 		fftwf_complex *m_outBuf;
+		float m_processedSamples[DEFAULT_OUT_SIZE];
 	};
 }
 

@@ -4,6 +4,8 @@
 #include <menu.h>
 #include <scene.h>
 
+#include <line_scene.h>
+
 #include <SDL.h>
 
 using namespace so;
@@ -20,8 +22,8 @@ Visualizer::~Visualizer()
 
 int Visualizer::initialize()
 {
-	int w, h;
-	m_renderContext.getWindowSize(&w, &h);
+	int w = m_renderContext.getWindowWidth();
+	int h = m_renderContext.getWindowHeight();
 
 	if (m_info.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, w))
 	{
@@ -47,27 +49,36 @@ void Visualizer::run()
 	SDL_Renderer *ren = m_renderContext.getRenderer();
 	Uint32 lastTicks = SDL_GetTicks() - 1;
 
-	Menu menu(m_renderContext, m_audioContext, m_keyboard);
-	bool inMenu = true;
+	Menu::MenuResult menuResult;
+	Menu menu(m_renderContext, m_audioContext, m_keyboard, menuResult);
 	if (menu.initialize())
 	{
 		std::cerr << "Unable to initialize menu.  Exiting run()." << std::endl;
 		return;
 	}
 
+	LineScene lineScene(m_renderContext, m_audioContext, m_keyboard);
+
 	Scene *currentScene = &menu;
 	bool done = false;
 	bool showHud = true;
 
+	// Main loop
 	while (!done)
 	{
+		// Input
+
 		pollKeyboard();
+
+		// Process audio
+		m_audioContext.processSamples();
 
 		// Update
 		
 		bool exitScene = false;
 		bool skipDraw = false;
 		bool escPressed = m_keyboard[SDLK_ESCAPE];
+		bool inMenu = (currentScene == &menu);
 
 		if (m_keyboard[SDLK_F1])
 		{
@@ -79,10 +90,22 @@ void Visualizer::run()
 			int menuVal = menu.update();
 			if (menuVal)
 			{
-				currentScene = nullptr; // pick a scene
+				currentScene = &lineScene; // pick a scene
 				skipDraw = true;
-				inMenu = false;
-				std::cout << "Exit menu." << std::endl;
+
+				std::cout << "Enter scene." << std::endl;
+
+				int err = m_audioContext.setInputDevice(menuResult.inputDeviceIndex);
+				if (err)
+				{
+					std::cerr << "Error using device: " << m_audioContext.getError() << std::endl;
+					currentScene = &menu;
+					skipDraw = false;
+				}
+				else
+				{
+					std::cout << "Using PortAudio device index: " << menuResult.inputDeviceIndex << std::endl;
+				}
 			}
 			done = escPressed;
 		}
@@ -93,11 +116,12 @@ void Visualizer::run()
 			{
 				finalVal = currentScene->update();
 			} 
-			inMenu = (finalVal != 0 ? true : false) || escPressed;
+			bool exitToMenu = (finalVal != 0 ? true : false) || escPressed;
 			
-			if (inMenu)
+			if (exitToMenu)
 			{
 				currentScene = &menu;
+				menu.reset();
 
 				std::cout << "Exit scene." << std::endl;
 			}
@@ -108,6 +132,9 @@ void Visualizer::run()
 		int fps = 1000 / (difference != 0 ? difference : 1);
 		lastTicks = currentTicks;
 
+		// Draw
+
+		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
 		SDL_RenderClear(ren);
 
 		if (currentScene != nullptr && !skipDraw)
