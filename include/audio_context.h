@@ -7,10 +7,13 @@
 #include <portaudio.h>
 #include <fftw3.h>
 
+#include <constants.h>
+
 #define DEFAULT_CHAN_COUNT 1
-#define DEFAULT_FRAMES_PER_BUFFER 64
+#define DEFAULT_FRAMES_PER_BUFFER 512
 #define DEFAULT_OUT_SIZE ((DEFAULT_FRAMES_PER_BUFFER / 2) + 1)
 #define AUDIO_CONTEXT_DATALEN DEFAULT_OUT_SIZE
+#define AUDIO_CONTEXT_HALF_DATALEN (AUDIO_CONTEXT_DATALEN / 2)
 
 namespace so
 {
@@ -28,6 +31,7 @@ namespace so
 		int stopStream();
 		void processSamples();
 		float *getSamples() { return m_processedSamples; }
+		float *getSampleFrequencies() { return m_sampleFrequencies; }
 		
 		std::string deviceName(int index);
 		std::vector<int> inputDeviceList();
@@ -45,6 +49,7 @@ namespace so
 		float *m_inBuf;
 		fftwf_complex *m_outBuf;
 		float m_processedSamples[DEFAULT_OUT_SIZE];
+		float m_sampleFrequencies[DEFAULT_OUT_SIZE];
 	};
 }
 

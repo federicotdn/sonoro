@@ -14,14 +14,16 @@ LineScene::~LineScene()
 
 int LineScene::update()
 {
-	float w = m_renderContext.getWindowWidth();
-	float h = m_renderContext.getWindowHeight();
+	float w = (float)m_renderContext.getWindowWidth();
+	float h = (float)m_renderContext.getWindowHeight();
 
 	float *samples = m_audioContext.getSamples();
-	for (int i = 0; i < AUDIO_CONTEXT_DATALEN; i++)
+	float *frequencies = m_audioContext.getSampleFrequencies();
+
+	for (int i = 0; i < AUDIO_CONTEXT_HALF_DATALEN; i++)
 	{
-		float x = ((float)i / (AUDIO_CONTEXT_DATALEN - 1)) * w;
-		float y = (h - 20) - (h - 20) * samples[i];
+		float x = ((float)i / (AUDIO_CONTEXT_HALF_DATALEN - 1)) * w;
+		float y = (h / 2) - ((samples[i] * 300) - 150);
 		m_points[i].x = (int)x;
 		m_points[i].y = (int)y;
 	}
@@ -34,9 +36,6 @@ void LineScene::draw()
 	SDL_Renderer *ren = m_renderContext.getRenderer();
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 	
-	SDL_RenderDrawLines(ren, m_points, AUDIO_CONTEXT_DATALEN);
-	
-	//SDL_Rect r = {10,10,10,10};
-	//SDL_RenderDrawRect(ren, &r);
+	SDL_RenderDrawLines(ren, m_points, AUDIO_CONTEXT_HALF_DATALEN);
 }
 

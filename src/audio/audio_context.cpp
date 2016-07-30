@@ -8,7 +8,8 @@ AudioContext::AudioContext() :
 	m_instream(nullptr),
 	m_inBuf(nullptr),
 	m_outBuf(nullptr),
-	m_processedSamples{0}
+	m_processedSamples{0},
+	m_sampleFrequencies{0}
 {
 }
 
@@ -123,10 +124,14 @@ int AudioContext::setInputDevice(int index)
 	inputParameters.device = index;
 	inputParameters.channelCount = DEFAULT_CHAN_COUNT;
 	inputParameters.sampleFormat = paFloat32; /* must match FFTW precision */
-	inputParameters.suggestedLatency = info->defaultHighInputLatency;
+	inputParameters.suggestedLatency = 0;
 	inputParameters.hostApiSpecificStreamInfo = nullptr;
 
 	double sampleRate = info->defaultSampleRate;
+	for (int i = 0; i < DEFAULT_OUT_SIZE; i++)
+	{
+		m_sampleFrequencies[i] = i * sampleRate / DEFAULT_FRAMES_PER_BUFFER;
+	}
 
 	PaError err = Pa_OpenStream(&m_instream, &inputParameters, nullptr, sampleRate, DEFAULT_FRAMES_PER_BUFFER, paClipOff, nullptr, nullptr);
 	if (err != paNoError) {
@@ -196,25 +201,42 @@ void AudioContext::processSamples()
 
 	// Returns PaInputOverflowed if data was discarded (ignore)
 	Pa_ReadStream(m_instream, m_inBuf, DEFAULT_FRAMES_PER_BUFFER);
+
+	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
+		float temp = sinf(PI_FLOAT * i / (DEFAULT_OUT_SIZE - 1));
+		m_inBuf[i] *= temp * temp;
+	}
+
 	fftwf_execute(m_plan);
 
-	float maxSample = -1;
+	float maxSample = std::numeric_limits<float>::lowest();
+	float minSample = std::numeric_limits<float>::max();
 
 	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
 		float real = m_outBuf[i][0];
 		float imag = m_outBuf[i][1];
 
-		float absolute = sqrtf((real * real) + (imag * imag));//10.0f * log10f((real * real) + (imag * imag));
+		float absolute = sqrtf((real * real) + (imag * imag));
+		//float absolute = 10.0f * log10f((real * real) + (imag * imag));
+		//float absolute = (m_inBuf[i * 2] + m_inBuf[i * 2 - 1])/2;
+		//float absolute = powf(2, (real * real) + (imag * imag));
+
 		m_processedSamples[i] = absolute;
 
 		if (absolute > maxSample)
 		{
 			maxSample = absolute;
 		}
+
+		if (absolute < minSample)
+		{
+			minSample = absolute;
+		}
 	}
 
 	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
-		m_processedSamples[i] /= maxSample;
+		m_processedSamples[i] -= minSample;
+		m_processedSamples[i] /= (maxSample - minSample);
 	}
 }
 
