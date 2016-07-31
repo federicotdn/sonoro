@@ -5,6 +5,7 @@
 #include <scene.h>
 
 #include <line_scene.h>
+#include <bars_scene.h>
 
 #include <SDL.h>
 
@@ -58,6 +59,7 @@ void Visualizer::run()
 	}
 
 	LineScene lineScene(m_renderContext, m_audioContext, m_keyboard);
+	BarsScene barsScene(m_renderContext, m_audioContext, m_keyboard);
 
 	Scene *currentScene = &menu;
 	bool done = false;
@@ -90,7 +92,7 @@ void Visualizer::run()
 			int menuVal = menu.update();
 			if (menuVal)
 			{
-				currentScene = &lineScene; // pick a scene
+				currentScene = &barsScene; // pick a scene
 				skipDraw = true;
 
 				std::cout << "Enter scene." << std::endl;

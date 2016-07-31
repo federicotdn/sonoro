@@ -11,10 +11,12 @@
 
 #define DEFAULT_CHAN_COUNT 1
 #define DEFAULT_FRAMES_PER_BUFFER 512
-#define DEFAULT_SMOOTHING 0.45f
+#define DEFAULT_SMOOTHING 0.5f
 #define DEFAULT_OUT_SIZE ((DEFAULT_FRAMES_PER_BUFFER / 2) + 1)
 #define AUDIO_CONTEXT_DATALEN DEFAULT_OUT_SIZE
 #define AUDIO_CONTEXT_HALF_DATALEN (AUDIO_CONTEXT_DATALEN / 2)
+
+#define AC_USE_HANN_WINDOW 0
 
 namespace so
 {
@@ -39,6 +41,8 @@ namespace so
 		int getDefaultInputDevice();
 
 	private:
+		float sampleComplexToReal(fftwf_complex c);
+
 		bool m_initialized;
 		std::string m_error;
 

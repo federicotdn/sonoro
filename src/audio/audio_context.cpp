@@ -127,7 +127,7 @@ int AudioContext::setInputDevice(int index)
 	inputParameters.suggestedLatency = 0;
 	inputParameters.hostApiSpecificStreamInfo = nullptr;
 
-	double sampleRate = info->defaultSampleRate;
+	float sampleRate = (float)info->defaultSampleRate;
 	for (int i = 0; i < DEFAULT_OUT_SIZE; i++)
 	{
 		m_sampleFrequencies[i] = i * sampleRate / DEFAULT_FRAMES_PER_BUFFER;
@@ -193,7 +193,7 @@ void AudioContext::processSamples()
 	{
 		for (int i = 0; i < DEFAULT_OUT_SIZE; i++)
 		{
-			m_processedSamples[i] = 0;
+			m_processedSamples[i] = 0; 
 		}
 
 		return;
@@ -205,11 +205,13 @@ void AudioContext::processSamples()
 	float oldOutValues[DEFAULT_OUT_SIZE];
 
 	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
+#if AC_USE_HANN_WINDOW
 		// Hann window function
 		float temp = sinf(PI_FLOAT * i / (DEFAULT_OUT_SIZE - 1));
-		//m_inBuf[i] *= temp * temp;
+		m_inBuf[i] *= temp * temp;
+#endif
 
-		oldOutValues[i] = m_processedSamples[i];
+		oldOutValues[i] = sampleComplexToReal(m_outBuf[i]);
 	}
 
 	fftwf_execute(m_plan);
@@ -219,35 +221,37 @@ void AudioContext::processSamples()
 
 	for (int i = 0; i < DEFAULT_OUT_SIZE; i++)
 	{
-		float real = m_outBuf[i][0];
-		float imag = m_outBuf[i][1];
-
-		//float absolute = sqrtf((real * real) + (imag * imag));
-		//absolute = 10.0f * log10f(absolute);
-		float absolute = 10.0f * log10f((real * real) + (imag * imag));
-		//float absolute = (m_inBuf[i * 2] + m_inBuf[i * 2 - 1])/2;
-		//float absolute = powf(2, (real * real) + (imag * imag));
+		float absolute = sampleComplexToReal(m_outBuf[i]);
+		absolute = absolute * (1 - DEFAULT_SMOOTHING) + oldOutValues[i] * DEFAULT_SMOOTHING;
 
 		m_processedSamples[i] = absolute;
 
-		if (absolute > maxSample)
+		if (m_processedSamples[i] > maxSample)
 		{
-			maxSample = absolute;
+			maxSample = m_processedSamples[i];
 		}
 
-		if (absolute < minSample)
+		if (m_processedSamples[i] < minSample)
 		{
-			minSample = absolute;
+			minSample = m_processedSamples[i];
 		}
 	}
 
 	for (int i = 0; i < DEFAULT_OUT_SIZE; i++)
 	{
 		m_processedSamples[i] -= minSample;
-		m_processedSamples[i] /= (maxSample - minSample);
-
-		m_processedSamples[i] = m_processedSamples[i] * (1 - DEFAULT_SMOOTHING) + oldOutValues[i] * DEFAULT_SMOOTHING;
+		m_processedSamples[i] /= (maxSample - minSample) + EPSILON_FLOAT;
 	}
+}
+
+float AudioContext::sampleComplexToReal(fftwf_complex c)
+{
+	float real = c[0];
+	float imag = c[1];
+
+	//return sqrtf((real * real) + (imag * imag));
+	return  10.0f * log10f((real * real) + (imag * imag) + EPSILON_FLOAT);
+	//return = (m_inBuf[i * 2] + m_inBuf[i * 2 - 1])/2;
 }
 
 std::string AudioContext::deviceName(int index)
