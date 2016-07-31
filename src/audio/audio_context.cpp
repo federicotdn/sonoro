@@ -133,7 +133,7 @@ int AudioContext::setInputDevice(int index)
 		m_sampleFrequencies[i] = i * sampleRate / DEFAULT_FRAMES_PER_BUFFER;
 	}
 
-	PaError err = Pa_OpenStream(&m_instream, &inputParameters, nullptr, sampleRate, DEFAULT_FRAMES_PER_BUFFER, paClipOff, nullptr, nullptr);
+	PaError err = Pa_OpenStream(&m_instream, &inputParameters, nullptr, sampleRate, DEFAULT_FRAMES_PER_BUFFER, paNoFlag, nullptr, nullptr);
 	if (err != paNoError) {
 		m_error = "Unable to open instream: " + std::string(Pa_GetErrorText(err));
 		m_instream = nullptr;
@@ -202,9 +202,14 @@ void AudioContext::processSamples()
 	// Returns PaInputOverflowed if data was discarded (ignore)
 	Pa_ReadStream(m_instream, m_inBuf, DEFAULT_FRAMES_PER_BUFFER);
 
+	float oldOutValues[DEFAULT_OUT_SIZE];
+
 	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
+		// Hann window function
 		float temp = sinf(PI_FLOAT * i / (DEFAULT_OUT_SIZE - 1));
-		m_inBuf[i] *= temp * temp;
+		//m_inBuf[i] *= temp * temp;
+
+		oldOutValues[i] = m_processedSamples[i];
 	}
 
 	fftwf_execute(m_plan);
@@ -212,12 +217,14 @@ void AudioContext::processSamples()
 	float maxSample = std::numeric_limits<float>::lowest();
 	float minSample = std::numeric_limits<float>::max();
 
-	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
+	for (int i = 0; i < DEFAULT_OUT_SIZE; i++)
+	{
 		float real = m_outBuf[i][0];
 		float imag = m_outBuf[i][1];
 
-		float absolute = sqrtf((real * real) + (imag * imag));
-		//float absolute = 10.0f * log10f((real * real) + (imag * imag));
+		//float absolute = sqrtf((real * real) + (imag * imag));
+		//absolute = 10.0f * log10f(absolute);
+		float absolute = 10.0f * log10f((real * real) + (imag * imag));
 		//float absolute = (m_inBuf[i * 2] + m_inBuf[i * 2 - 1])/2;
 		//float absolute = powf(2, (real * real) + (imag * imag));
 
@@ -234,9 +241,12 @@ void AudioContext::processSamples()
 		}
 	}
 
-	for (int i = 0; i < DEFAULT_OUT_SIZE; i++) {
+	for (int i = 0; i < DEFAULT_OUT_SIZE; i++)
+	{
 		m_processedSamples[i] -= minSample;
 		m_processedSamples[i] /= (maxSample - minSample);
+
+		m_processedSamples[i] = m_processedSamples[i] * (1 - DEFAULT_SMOOTHING) + oldOutValues[i] * DEFAULT_SMOOTHING;
 	}
 }
 

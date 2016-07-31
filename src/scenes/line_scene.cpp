@@ -23,7 +23,7 @@ int LineScene::update()
 	for (int i = 0; i < AUDIO_CONTEXT_HALF_DATALEN; i++)
 	{
 		float x = ((float)i / (AUDIO_CONTEXT_HALF_DATALEN - 1)) * w;
-		float y = (h / 2) - ((samples[i] * 300) - 150);
+		float y = (h / 2) - ((samples[i] * 500) - 250);
 		m_points[i].x = (int)x;
 		m_points[i].y = (int)y;
 	}
