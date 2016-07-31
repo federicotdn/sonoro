@@ -117,11 +117,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\audio\audio_context.cpp" />
-    <ClCompile Include="src\bars_scene.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\render\render_context.cpp" />
     <ClCompile Include="src\render\text_renderer.cpp" />
     <ClCompile Include="src\menu.cpp" />
+    <ClCompile Include="src\scenes\bars_scene.cpp" />
     <ClCompile Include="src\scenes\line_scene.cpp" />
     <ClCompile Include="src\visualizer.cpp" />
   </ItemGroup>
