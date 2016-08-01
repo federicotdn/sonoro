@@ -107,7 +107,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>portaudio_x64.lib;libfftw3f-3.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>portaudio_x64.lib;libfftw3f-3.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <ClCompile>
@@ -133,6 +133,10 @@
     <ClInclude Include="include\bars_scene.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\fftw3\fftw3.h" />
+    <ClInclude Include="include\GL\eglew.h" />
+    <ClInclude Include="include\GL\glew.h" />
+    <ClInclude Include="include\GL\glxew.h" />
+    <ClInclude Include="include\GL\wglew.h" />
     <ClInclude Include="include\input.h" />
     <ClInclude Include="include\line_scene.h" />
     <ClInclude Include="include\menu.h" />

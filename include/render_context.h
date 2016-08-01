@@ -3,7 +3,10 @@
 
 #include <string>
 
+#include <GL/glew.h>
+
 #include <SDL.h>
+#include <SDL_opengl.h>
 #include <SDL_ttf.h>
 
 namespace so
@@ -22,6 +25,7 @@ namespace so
 	private:
 		SDL_Window *m_window;
 		SDL_Renderer *m_renderer;
+		SDL_GLContext m_glContext;
 		std::string m_error;
 		bool m_initialized;
 	};
