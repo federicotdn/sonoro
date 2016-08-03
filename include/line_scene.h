@@ -15,7 +15,7 @@ namespace so
 		void draw() override;
 	
 	private:
-		SDL_Point m_points[AUDIO_CONTEXT_DATALEN];
+		SDL_Point m_points[AC_OUT_SIZE];
 	};
 }
 

@@ -34,7 +34,7 @@ int Visualizer::initialize()
 
 	m_info.appendln("Visualizer ready.  Choose an input [1-9]:");
 	m_info.appendln("");
-	m_info.setPosition(0, h - DEFAULT_FONT_SIZE);
+	m_info.setPosition(0, h - DEFAULT_FONT_SIZE * 2);
 
 	return 0;
 }
@@ -71,6 +71,13 @@ void Visualizer::run()
 		// Input
 
 		pollKeyboard();
+		if (m_keyboard[SDLK_o])
+		{
+			m_audioContext.addSmoothing(-0.05f);
+		}
+		else if (m_keyboard[SDLK_p]) {
+			m_audioContext.addSmoothing(0.05f);
+		}
 
 		// Process audio
 		m_audioContext.processSamples();
@@ -146,7 +153,9 @@ void Visualizer::run()
 
 		if (showHud)
 		{
-			m_info.setText(std::to_string(fps));
+			m_info.clear();
+			m_info.appendln("FPS: " + std::to_string(fps));
+			m_info.appendln("Smoothing: " + std::to_string(m_audioContext.getSmoothing()));
 			SDL_Texture *infoTex = m_info.getTexture(m_renderContext);
 			SDL_RenderCopy(ren, infoTex, NULL, m_info.getRect());
 		}

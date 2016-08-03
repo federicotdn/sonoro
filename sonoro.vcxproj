@@ -130,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\audio_context.h" />
+    <ClInclude Include="include\a_weighting.h" />
     <ClInclude Include="include\bars_scene.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\fftw3\fftw3.h" />

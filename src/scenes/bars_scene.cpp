@@ -30,7 +30,7 @@ int BarsScene::update()
 		}
 		val /= BAR_DATA_WIDTH;
 		
-		m_rects[i].h = val * 500;
+		m_rects[i].h = val * h;
 		m_rects[i].w = barWidth;
 		m_rects[i].y = h - m_rects[i].h;
 		m_rects[i].x = i * barWidth;
