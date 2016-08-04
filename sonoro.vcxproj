@@ -117,13 +117,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\audio\audio_context.cpp" />
+    <ClCompile Include="src\input\input_context.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\render\render_context.cpp" />
     <ClCompile Include="src\render\text_renderer.cpp" />
     <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\scenes\bars_scene.cpp" />
     <ClCompile Include="src\scenes\line_scene.cpp" />
-    <ClCompile Include="src\visualizer.cpp" />
+    <ClCompile Include="src\sonoro.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -138,7 +139,7 @@
     <ClInclude Include="include\GL\glew.h" />
     <ClInclude Include="include\GL\glxew.h" />
     <ClInclude Include="include\GL\wglew.h" />
-    <ClInclude Include="include\input.h" />
+    <ClInclude Include="include\input_context.h" />
     <ClInclude Include="include\line_scene.h" />
     <ClInclude Include="include\menu.h" />
     <ClInclude Include="include\portaudio\pa_asio.h" />
@@ -225,7 +226,7 @@
     <ClInclude Include="include\sdl2\SDL_video.h" />
     <ClInclude Include="include\sdl_ttf\SDL_ttf.h" />
     <ClInclude Include="include\text_renderer.h" />
-    <ClInclude Include="include\visualizer.h" />
+    <ClInclude Include="include\sonoro.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

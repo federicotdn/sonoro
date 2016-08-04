@@ -35,7 +35,7 @@ int RenderContext::initialize(int win_width, int win_height)
 
 	/* Initialize SDL */
 
-	if (SDL_Init(SDL_INIT_VIDEO))
+	if (SDL_Init(SDL_INIT_EVERYTHING))
 	{
 		m_error = "Unable to initialize SDL.";
 		return -1;

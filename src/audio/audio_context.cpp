@@ -109,8 +109,6 @@ int AudioContext::initialize()
 	return 0;
 }
 
-#include <iostream>
-
 int AudioContext::setInputDevice(int index)
 {
 	int deviceCount = Pa_GetDeviceCount();
@@ -139,7 +137,6 @@ int AudioContext::setInputDevice(int index)
 	for (int i = 0; i < AC_RAW_OUT_SIZE; i++)
 	{
 		m_sampleFrequencies[i] = i * sampleRate / DEFAULT_FRAMES_PER_BUFFER;
-		std::cout << m_sampleFrequencies[i] << std::endl;
 	}
 
 	PaError err = Pa_OpenStream(&m_instream, &inputParameters, nullptr, sampleRate, DEFAULT_FRAMES_PER_BUFFER, paNoFlag, nullptr, nullptr);

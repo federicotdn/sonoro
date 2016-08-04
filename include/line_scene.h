@@ -8,11 +8,13 @@ namespace so
 	class LineScene : public Scene
 	{
 	public:
-		LineScene(RenderContext &renderContext, AudioContext &audioContext, KeyboardMap &keyboard);
+		LineScene(Sonoro &app);
 		~LineScene();
 
-		int update() override;
+		void update() override;
 		void draw() override;
+
+		std::string sceneName() { return "Line Scene"; }
 	
 	private:
 		SDL_Point m_points[AC_OUT_SIZE];

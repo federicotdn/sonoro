@@ -2,8 +2,8 @@
 
 using namespace so;
 
-LineScene::LineScene(RenderContext & renderContext, AudioContext & audioContext, KeyboardMap & keyboard) :
-	Scene(renderContext, audioContext, keyboard),
+LineScene::LineScene(Sonoro &app) :
+	Scene(app),
 	m_points{0}
 {
 }
@@ -12,13 +12,13 @@ LineScene::~LineScene()
 {
 }
 
-int LineScene::update()
+void LineScene::update()
 {
-	float w = (float)m_renderContext.getWindowWidth();
-	float h = (float)m_renderContext.getWindowHeight();
+	float w = (float)m_app.getRenderContext().getWindowWidth();
+	float h = (float)m_app.getRenderContext().getWindowHeight();
 
-	float *samples = m_audioContext.getSamples();
-	float *frequencies = m_audioContext.getSampleFrequencies();
+	float *samples = m_app.getAudioContext().getSamples();
+	float *frequencies = m_app.getAudioContext().getSampleFrequencies();
 
 	for (int i = 0; i < AC_OUT_SIZE; i++)
 	{
@@ -27,13 +27,11 @@ int LineScene::update()
 		m_points[i].x = (int)x;
 		m_points[i].y = (int)y;
 	}
-
-	return 0;
 }
 
 void LineScene::draw()
 {
-	SDL_Renderer *ren = m_renderContext.getRenderer();
+	SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 	
 	SDL_RenderDrawLines(ren, m_points, AC_OUT_SIZE);

@@ -5,30 +5,30 @@
 #include <scene.h>
 #include <text_renderer.h>
 
+#include <map>
+
 namespace so
 {
 	class Menu : public Scene
 	{
 	public:
-		struct MenuResult {
-			int inputDeviceIndex = 0;
-		};
-
-		Menu(RenderContext &renderContext, AudioContext &audioContext, KeyboardMap &keyboard, MenuResult &result);
+		Menu(Sonoro &app);
 		~Menu();
 
 		int initialize() override;
-		void reset();
 		void draw() override;
-		int update() override;
+		void update() override;
+
+		std::string sceneName() { return "Menu"; }
 
 		void showInputDevices();
 
 	private:
-		int getKeyboardNum();
+		void reset();
 
-		MenuResult &m_menuResult;
 		TextRenderer m_info;
+		int m_currentSelection;
+		std::map<int, int> m_menuIndexToPAIndex;
 	};
 }
 

@@ -2,7 +2,8 @@
 
 #include <render_context.h>
 #include <audio_context.h>
-#include <visualizer.h>
+#include <input_context.h>
+#include <sonoro.h>
 
 int main(int argc, char *argv[])
 {
@@ -22,14 +23,15 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	so::Visualizer visualizer(renderContext, audioContext);
-	if (visualizer.initialize())
+	so::InputContext inputContext;
+
+	so::Sonoro app(renderContext, audioContext, inputContext);
+	if (app.initialize())
 	{
 		std::cerr << "Unable to initialize visualizer.  Exiting." << std::endl;
 		return EXIT_FAILURE;
 	}
 
-	visualizer.run();
-
-	return EXIT_SUCCESS;
+	int ret = app.run();
+	return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

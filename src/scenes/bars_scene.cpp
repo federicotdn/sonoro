@@ -2,8 +2,8 @@
 
 using namespace so;
 
-BarsScene::BarsScene(RenderContext & renderContext, AudioContext & audioContext, KeyboardMap & keyboard) :
-	Scene(renderContext, audioContext, keyboard),
+BarsScene::BarsScene(Sonoro &app) :
+	Scene(app),
 	m_rects{ 0 }
 {
 }
@@ -12,13 +12,13 @@ BarsScene::~BarsScene()
 {
 }
 
-int BarsScene::update()
+void BarsScene::update()
 {
-	float w = (float)m_renderContext.getWindowWidth();
-	float h = (float)m_renderContext.getWindowHeight();
+	float w = (float)m_app.getRenderContext().getWindowWidth();
+	float h = (float)m_app.getRenderContext().getWindowHeight();
 
-	float *samples = m_audioContext.getSamples();
-	float *frequencies = m_audioContext.getSampleFrequencies();
+	float *samples = m_app.getAudioContext().getSamples();
+	float *frequencies = m_app.getAudioContext().getSampleFrequencies();
 
 	float barWidth = w / BAR_COUNT;
 	for (int i = 0; i < BAR_COUNT; i++)
@@ -35,13 +35,11 @@ int BarsScene::update()
 		m_rects[i].y = h - m_rects[i].h;
 		m_rects[i].x = i * barWidth;
 	}
-
-	return 0;
 }
 
 void BarsScene::draw()
 {
-	SDL_Renderer *ren = m_renderContext.getRenderer();
+	SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
 	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 
 	SDL_RenderDrawRects(ren, m_rects, BAR_COUNT);

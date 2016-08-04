@@ -11,11 +11,13 @@ namespace so
 	class BarsScene : public Scene
 	{
 	public:
-		BarsScene(RenderContext &renderContext, AudioContext &audioContext, KeyboardMap &keyboard);
+		BarsScene(Sonoro &app);
 		~BarsScene();
 
-		int update() override;
+		void update() override;
 		void draw() override;
+
+		std::string sceneName() { return "Bars Scene"; }
 
 	private:
 		SDL_Rect m_rects[BAR_COUNT];
