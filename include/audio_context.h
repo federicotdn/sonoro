@@ -20,9 +20,6 @@
 // Use only values in 0-10k Hz range
 #define AC_OUT_SIZE (AC_RAW_OUT_SIZE / 2)
 
-#define AC_USE_HANN_WINDOW 0
-#define AC_USE_A_WEIGHTING 1
-
 namespace so
 {
 	class AudioContext
@@ -40,9 +37,15 @@ namespace so
 		void processSamples();
 		float *getSamples() { return m_processedSamples; }
 		float *getSampleFrequencies() { return m_sampleFrequencies; }
+		
 		void addSmoothing(float val);
 		float getSmoothing() { return m_smoothing; }
-		
+		void setHannWindowEnabled(bool enabled);
+		bool getHannWindowEnabled() { return m_hannWindowEnabled; }
+		void setAWeightingEnabled(bool enabled);
+		bool getAWeightingEnabled() { return m_aWeightingEnabled; }
+
+
 		std::string deviceName(int index);
 		std::vector<int> inputDeviceList();
 		int getDefaultInputDevice();
@@ -55,6 +58,9 @@ namespace so
 
 		/* PortAudio */
 		PaStream *m_instream;
+		float m_smoothing;
+		bool m_hannWindowEnabled;
+		bool m_aWeightingEnabled;
 
 		/* FFTW */
 		fftwf_plan m_plan;
@@ -63,7 +69,6 @@ namespace so
 		float m_processedSamples[AC_OUT_SIZE];
 		float m_sampleFrequencies[AC_RAW_OUT_SIZE];
 
-		float m_smoothing;
 		int m_lastBackBuffer;
 		fftwf_complex m_backBuffers[DEFAULT_BACK_BUFFER_COUNT][AC_OUT_SIZE];
 	};

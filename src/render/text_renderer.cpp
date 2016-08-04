@@ -8,12 +8,18 @@ TextRenderer::TextRenderer() :
 	m_quad{0, 0, 0, 0},
 	m_fontSize(0),
 	m_dirty(true),
-	m_color{255, 255, 255}
+	m_color{255, 255, 255},
+	m_backgroundColor(nullptr)
 {
 }
 
 TextRenderer::~TextRenderer()
 {
+	if (m_backgroundColor != nullptr)
+	{
+		delete m_backgroundColor;
+	}
+
 	if (m_font != nullptr)
 	{
 		TTF_CloseFont(m_font);
@@ -56,12 +62,26 @@ SDL_Texture *TextRenderer::getTexture(RenderContext &context)
 		SDL_DestroyTexture(m_texture);
 	}
 
-	SDL_Surface *surface = TTF_RenderUTF8_Blended_Wrapped(m_font, m_text.c_str(), m_color, m_wrapSize);
-	m_texture = SDL_CreateTextureFromSurface(context.getRenderer(), surface);
+	SDL_Surface *textSurface = TTF_RenderUTF8_Blended_Wrapped(m_font, m_text.c_str(), m_color, m_wrapSize);
 
-	m_quad.w = surface->w;
-	m_quad.h = surface->h;
-	SDL_FreeSurface(surface);
+	m_quad.w = textSurface->w;
+	m_quad.h = textSurface->h;
+
+	if (m_backgroundColor != nullptr)
+	{
+		SDL_Surface *background = SDL_CreateRGBSurface(0, m_quad.w, m_quad.h, 32, 0, 0, 0, 0);
+		SDL_FillRect(background, NULL, SDL_MapRGB(background->format, m_backgroundColor->r, m_backgroundColor->g, m_backgroundColor->b));
+
+		SDL_BlitSurface(textSurface, nullptr, background, nullptr);
+		m_texture = SDL_CreateTextureFromSurface(context.getRenderer(), background);
+		SDL_FreeSurface(background);
+	}
+	else
+	{
+		m_texture = SDL_CreateTextureFromSurface(context.getRenderer(), textSurface);
+	}
+	
+	SDL_FreeSurface(textSurface);
 
 	m_dirty = false;
 	return m_texture;
@@ -121,4 +141,15 @@ void TextRenderer::setColor(SDL_Color color)
 {
 	m_dirty = true;
 	m_color = color;
+}
+
+void TextRenderer::setBackgroundColor(SDL_Color color)
+{
+	m_dirty = true;
+	if (m_backgroundColor != nullptr)
+	{
+		delete m_backgroundColor;
+	}
+
+	m_backgroundColor = new SDL_Color(color);
 }

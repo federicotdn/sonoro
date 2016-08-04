@@ -28,7 +28,7 @@ int Sonoro::initialize()
 	int w = m_renderContext.getWindowWidth();
 	int h = m_renderContext.getWindowHeight();
 
-	if (m_info.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, w))
+	if (m_info.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, w / 2))
 	{
 		std::cerr << "Error initializing Visualizer info panel." << std::endl;
 		return -1;
@@ -36,7 +36,8 @@ int Sonoro::initialize()
 
 	m_info.appendln("Visualizer ready.  Choose an input [1-9]:");
 	m_info.appendln("");
-	m_info.setPosition(0, h - DEFAULT_FONT_SIZE * 2);
+	m_info.setPosition(0, h);
+	m_info.setBackgroundColor({ 0, 100, 10 });
 
 	m_initialized = true;
 	return 0;
@@ -94,13 +95,7 @@ int Sonoro::run()
 		// Input
 		m_inputContext.pollInputs();
 
-		if (m_inputContext.actionActivated(SonoroAction::SMOOTH_DOWN))
-		{
-			m_audioContext.addSmoothing(-0.05f);
-		}
-		else if (m_inputContext.actionActivated(SonoroAction::SMOOTH_UP)) {
-			m_audioContext.addSmoothing(0.05f);
-		}
+		checkGlobalActions();
 
 		// Process audio
 		m_audioContext.processSamples();
@@ -163,6 +158,10 @@ int Sonoro::run()
 			m_info.clear();
 			m_info.appendln("FPS: " + std::to_string(fps));
 			m_info.appendln("Smoothing: " + std::to_string(m_audioContext.getSmoothing()));
+			m_info.append("Hann Window: " + std::to_string(m_audioContext.getHannWindowEnabled()));
+			m_info.appendln(", A Weighting: " + std::to_string(m_audioContext.getAWeightingEnabled()));
+			m_info.setPosition(0, m_renderContext.getWindowHeight() - m_info.getRect()->h);
+
 			SDL_Texture *infoTex = m_info.getTexture(m_renderContext);
 			SDL_RenderCopy(ren, infoTex, NULL, m_info.getRect());
 		}
@@ -177,4 +176,25 @@ int Sonoro::run()
 	}
 
 	return 0;
+}
+
+void Sonoro::checkGlobalActions()
+{
+	if (m_inputContext.actionActivated(SonoroAction::SMOOTH_DOWN))
+	{
+		m_audioContext.addSmoothing(-0.01f);
+	}
+	else if (m_inputContext.actionActivated(SonoroAction::SMOOTH_UP)) {
+		m_audioContext.addSmoothing(0.01f);
+	}
+
+	if (m_inputContext.actionActivated(SonoroAction::TOGGLE_AWEIGHTING))
+	{
+		m_audioContext.setAWeightingEnabled(!m_audioContext.getAWeightingEnabled());
+	}
+	
+	if (m_inputContext.actionActivated(SonoroAction::TOGGLE_HANNWINDOW))
+	{
+		m_audioContext.setHannWindowEnabled(!m_audioContext.getHannWindowEnabled());
+	}
 }

@@ -1,8 +1,5 @@
 #include <audio_context.h>
-
-#if AC_USE_A_WEIGHTING
 #include <a_weighting.h>
-#endif
 
 using namespace so;
 
@@ -16,7 +13,9 @@ AudioContext::AudioContext() :
 	m_sampleFrequencies{0},
 	m_backBuffers{0},
 	m_lastBackBuffer(0),
-	m_smoothing(DEFAULT_SMOOTHING)
+	m_smoothing(DEFAULT_SMOOTHING),
+	m_hannWindowEnabled(false),
+	m_aWeightingEnabled(true)
 {
 }
 
@@ -208,13 +207,14 @@ void AudioContext::processSamples()
 	// Returns PaInputOverflowed if data was discarded (ignore)
 	Pa_ReadStream(m_instream, m_inBuf, DEFAULT_FRAMES_PER_BUFFER);
 
-#if AC_USE_HANN_WINDOW
-	for (int i = 0; i < DEFAULT_FRAMES_PER_BUFFER; i++) {
-		// Hann window function
-		float temp = sinf(PI_FLOAT * i / (DEFAULT_OUT_SIZE - 1));
-		m_inBuf[i] *= temp * temp;
+	if (m_hannWindowEnabled)
+	{
+		for (int i = 0; i < DEFAULT_FRAMES_PER_BUFFER; i++) {
+			// Hann window function
+			float temp = sinf(PI_FLOAT * i / (DEFAULT_FRAMES_PER_BUFFER - 1));
+			m_inBuf[i] *= temp * temp;
+		}
 	}
-#endif
 
 	fftwf_execute(m_plan);
 
@@ -260,33 +260,33 @@ void AudioContext::processSamples()
 
 		m_processedSamples[i] = sampleToDb(averagedSample);
 
-#if AC_USE_A_WEIGHTING
-
-		while (m_sampleFrequencies[i] > a_weights[j].freq && j < sizeof(a_weights))
+		if (m_aWeightingEnabled)
 		{
-			j++;
-		}
-
-		float aWeightDb = 0;
-		if (j == 0 || j >= sizeof(a_weights))
-		{
-			if (j > sizeof(a_weights))
+			while (m_sampleFrequencies[i] > a_weights[j].freq && j < sizeof(a_weights))
 			{
-				j = sizeof(a_weights) - 1;
+				j++;
 			}
-			aWeightDb = a_weights[i].db;
-		}
-		else
-		{
-			float db0 = a_weights[j - 1].db;
-			float freq0 = a_weights[j - 1].freq;
-			float db1 = a_weights[j].db;
-			float freq1 = a_weights[j].freq;
-			aWeightDb = db0 + (db1 - db0) * ((m_sampleFrequencies[i] - freq0) / (freq1 - freq0));
-		}
 
-		m_processedSamples[i] += aWeightDb;
-#endif
+			float aWeightDb = 0;
+			if (j == 0 || j >= sizeof(a_weights))
+			{
+				if (j > sizeof(a_weights))
+				{
+					j = sizeof(a_weights) - 1;
+				}
+				aWeightDb = a_weights[i].db;
+			}
+			else
+			{
+				float db0 = a_weights[j - 1].db;
+				float freq0 = a_weights[j - 1].freq;
+				float db1 = a_weights[j].db;
+				float freq1 = a_weights[j].freq;
+				aWeightDb = db0 + (db1 - db0) * ((m_sampleFrequencies[i] - freq0) / (freq1 - freq0));
+			}
+
+			m_processedSamples[i] += aWeightDb;
+		}
 
 		if (m_processedSamples[i] > maxSample)
 		{
@@ -333,6 +333,16 @@ void AudioContext::addSmoothing(float val)
 	{
 		m_smoothing = 1;
 	}
+}
+
+void AudioContext::setHannWindowEnabled(bool enabled)
+{
+	m_hannWindowEnabled = enabled;
+}
+
+void AudioContext::setAWeightingEnabled(bool enabled)
+{
+	m_aWeightingEnabled = enabled;
 }
 
 std::string AudioContext::deviceName(int index)

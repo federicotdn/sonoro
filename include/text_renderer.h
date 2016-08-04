@@ -25,6 +25,7 @@ namespace so
 		void setText(std::string text);
 		void clear();
 		void setColor(SDL_Color color);
+		void setBackgroundColor(SDL_Color color);
 
 	private:
 		bool m_dirty;
@@ -36,6 +37,7 @@ namespace so
 		TTF_Font *m_font;
 		SDL_Texture *m_texture;
 		SDL_Color m_color;
+		SDL_Color *m_backgroundColor;
 	};
 }
 

@@ -18,7 +18,9 @@ namespace so
 		UP,
 		DOWN,
 		SELECT,
-		EXIT
+		EXIT,
+		TOGGLE_AWEIGHTING,
+		TOGGLE_HANNWINDOW
 	};
 
 	struct KbBinding {

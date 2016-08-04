@@ -22,6 +22,8 @@ int Menu::initialize()
 		return err;
 	}
 
+	m_info.setBackgroundColor({ 0, 0, 128 });
+
 	reset();
 	return 0;
 }

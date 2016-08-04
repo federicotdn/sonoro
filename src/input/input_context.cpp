@@ -16,6 +16,8 @@ InputContext::InputContext()
 		{ SDLK_DOWN, DOWN },
 		{ SDLK_RETURN, SELECT },
 		{ SDLK_ESCAPE, EXIT },
+		{ SDLK_a, TOGGLE_AWEIGHTING },
+		{ SDLK_h, TOGGLE_HANNWINDOW }
 	};
 	// ==== End Keyboard Bindings ====
 

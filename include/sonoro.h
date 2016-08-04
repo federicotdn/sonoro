@@ -24,6 +24,8 @@ namespace so
 		int initialize();
 		int run();
 	private:
+		void checkGlobalActions();
+
 		RenderContext &m_renderContext;
 		AudioContext &m_audioContext;
 		InputContext &m_inputContext;
