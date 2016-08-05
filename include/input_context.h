@@ -17,10 +17,13 @@ namespace so
 		TOGGLE_HUD,
 		UP,
 		DOWN,
+		LEFT,
+		RIGHT,
 		SELECT,
 		EXIT,
 		TOGGLE_AWEIGHTING,
-		TOGGLE_HANNWINDOW
+		TOGGLE_HANNWINDOW,
+		HELP
 	};
 
 	struct KbBinding {

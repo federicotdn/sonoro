@@ -23,14 +23,18 @@ namespace so
 
 		int initialize();
 		int run();
+
 	private:
 		void checkGlobalActions();
+		void setupHelpPanel();
+		void updateHud(int fps, std::string sceneName);
 
 		RenderContext &m_renderContext;
 		AudioContext &m_audioContext;
 		InputContext &m_inputContext;
 
 		TextRenderer m_info;
+		TextRenderer m_help;
 		bool m_initialized;
 	};
 }

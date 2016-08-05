@@ -28,9 +28,15 @@ int Sonoro::initialize()
 	int w = m_renderContext.getWindowWidth();
 	int h = m_renderContext.getWindowHeight();
 
-	if (m_info.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, w / 2))
+	if (m_info.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE * 25))
 	{
 		std::cerr << "Error initializing Visualizer info panel." << std::endl;
+		return -1;
+	}
+
+	if (m_help.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE * 35))
+	{
+		std::cerr << "Error initializing Visualizer help panel." << std::endl;
 		return -1;
 	}
 
@@ -39,8 +45,25 @@ int Sonoro::initialize()
 	m_info.setPosition(0, h);
 	m_info.setBackgroundColor({ 0, 100, 10 });
 
+	setupHelpPanel();
+
 	m_initialized = true;
 	return 0;
+}
+
+void Sonoro::setupHelpPanel()
+{
+	m_help.appendln("======= SONORO HELP =======");
+	m_help.appendln(" - Press SPACE to switch to the next scene.");
+	m_help.appendln(" - Press C to switch to the previous scene.");
+	m_help.appendln(" - F1 toggles the info HUD.");
+	m_help.appendln(" - Use 'o' and 'p' to increase/decrease smoothing factor.");
+	m_help.appendln(" - 'a' toggles A Weighting.");
+	m_help.appendln(" - 'w' toggles Hann Window function usage.");
+	m_help.appendln(" - 'h' toggles the Help dialogue.");
+	m_help.appendln(" - Use the Menu scene to select the audio input device.");
+	m_help.appendln(" - Press ESC to quit.");
+	m_help.setBackgroundColor({ 115, 0, 105 });
 }
 
 int Sonoro::run()
@@ -58,8 +81,8 @@ int Sonoro::run()
 	std::vector<Scene*> initialScenes =
 	{
 		new Menu(*this),
-		new LineScene(*this),
-		new BarsScene(*this)
+		new BarsScene(*this),
+		new LineScene(*this)
 	};
 	// =========================================
 
@@ -86,8 +109,8 @@ int Sonoro::run()
 	}
 
 	bool done = false;
-	bool showHud = true;
-	int currentSceneIndex = 0;
+	bool showHud = true, showHelp = false;
+	int currentSceneIndex = 0, fps = 0, loopTicks = 0;
 
 	// Main loop
 	while (!done)
@@ -115,6 +138,11 @@ int Sonoro::run()
 			showHud = !showHud;
 		}
 
+		if (m_inputContext.actionActivated(SonoroAction::HELP))
+		{
+			showHelp = !showHelp;
+		}
+
 		if (m_inputContext.actionActivated(SonoroAction::NEXT_SCENE))
 		{
 			skipSceneDraw = true;
@@ -140,8 +168,11 @@ int Sonoro::run()
 
 		Uint32 currentTicks = SDL_GetTicks();
 		Uint32 difference = currentTicks - lastTicks;
-		int fps = 1000 / (difference != 0 ? difference : 1);
 		lastTicks = currentTicks;
+		if (loopTicks % 10 == 0)
+		{
+			fps = 1000 / (difference != 0 ? difference : 1);
+		}
 
 		// Draw
 
@@ -155,19 +186,23 @@ int Sonoro::run()
 
 		if (showHud)
 		{
-			m_info.clear();
-			m_info.appendln("FPS: " + std::to_string(fps));
-			m_info.appendln("Smoothing: " + std::to_string(m_audioContext.getSmoothing()));
-			m_info.append("Hann Window: " + std::to_string(m_audioContext.getHannWindowEnabled()));
-			m_info.appendln(", A Weighting: " + std::to_string(m_audioContext.getAWeightingEnabled()));
-			m_info.appendln("Current scene: " + currentScene->sceneName());
-			m_info.setPosition(0, m_renderContext.getWindowHeight() - m_info.getRect()->h);
-
+			updateHud(fps, currentScene->sceneName());
 			SDL_Texture *infoTex = m_info.getTexture(m_renderContext);
 			SDL_RenderCopy(ren, infoTex, NULL, m_info.getRect());
 		}
 
+		if (showHelp)
+		{
+			SDL_Texture *helpTex = m_help.getTexture(m_renderContext);
+			SDL_Rect *helpRect = m_help.getRect();
+			int x = (m_renderContext.getWindowWidth() - helpRect->w) / 2;
+			int y = (m_renderContext.getWindowHeight() - helpRect->h) / 2;
+			m_help.setPosition(x, y);
+			SDL_RenderCopy(ren, helpTex, NULL, helpRect);
+		}
+
 		SDL_RenderPresent(ren);
+		loopTicks++;
 	}
 
 	// Delete scenes
@@ -177,6 +212,17 @@ int Sonoro::run()
 	}
 
 	return 0;
+}
+
+void Sonoro::updateHud(int fps, std::string sceneName)
+{
+	m_info.clear();
+	m_info.appendln("FPS: " + std::to_string(fps));
+	m_info.appendln("Smoothing: " + std::to_string(m_audioContext.getSmoothing()));
+	m_info.append("Hann Window: " + std::to_string(m_audioContext.getHannWindowEnabled()));
+	m_info.appendln(", A Weighting: " + std::to_string(m_audioContext.getAWeightingEnabled()));
+	m_info.appendln("Current scene: " + sceneName + " (press h for Help)");
+	m_info.setPosition(0, m_renderContext.getWindowHeight() - m_info.getRect()->h);
 }
 
 void Sonoro::checkGlobalActions()
