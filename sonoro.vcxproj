@@ -112,13 +112,14 @@
     </Link>
     <ClCompile>
       <EnablePREfast>false</EnablePREfast>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\audio\audio_context.cpp" />
     <ClCompile Include="src\input\input_context.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\math_utils.cpp" />
     <ClCompile Include="src\render\render_context.cpp" />
     <ClCompile Include="src\render\text_renderer.cpp" />
     <ClCompile Include="src\menu.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\input_context.h" />
     <ClInclude Include="include\line_scene.h" />
+    <ClInclude Include="include\math_utils.h" />
     <ClInclude Include="include\menu.h" />
     <ClInclude Include="include\render_context.h" />
     <ClInclude Include="include\scene.h" />

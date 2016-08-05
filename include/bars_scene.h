@@ -3,8 +3,7 @@
 
 #include <scene.h>
 
-#define BAR_DATA_WIDTH 2
-#define BAR_COUNT (AC_OUT_SIZE / BAR_DATA_WIDTH)
+#define DEFAULT_BAR_DATA_WIDTH 2
 
 namespace so
 {
@@ -20,7 +19,8 @@ namespace so
 		std::string sceneName() { return "Bars Scene"; }
 
 	private:
-		SDL_Rect m_rects[BAR_COUNT];
+		int m_barDataWidth;
+		SDL_Rect m_rects[AC_OUT_SIZE];
 	};
 }
 

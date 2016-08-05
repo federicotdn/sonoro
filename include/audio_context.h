@@ -15,10 +15,12 @@
 #define DEFAULT_SMOOTHING 0.05f
 #define DEFAULT_BACK_BUFFER_COUNT 25
 
-#define AC_RAW_OUT_SIZE ((DEFAULT_FRAMES_PER_BUFFER / 2) + 1)
+#define AC_IN_SIZE DEFAULT_FRAMES_PER_BUFFER
 
+#define AC_RAW_OUT_SIZE ((DEFAULT_FRAMES_PER_BUFFER / 2) + 1)
 // Use only values in 0-10k Hz range
 #define AC_OUT_SIZE (AC_RAW_OUT_SIZE / 2)
+
 
 namespace so
 {
@@ -35,7 +37,8 @@ namespace so
 		int startStream();
 		int stopStream();
 		void processSamples();
-		float *getSamples() { return m_processedSamples; }
+		float *getProcessedSamples() { return m_processedSamples; }
+		float *getRawSamples() { return m_inBuf; }
 		float *getSampleFrequencies() { return m_sampleFrequencies; }
 		
 		void addSmoothing(float val);

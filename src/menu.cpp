@@ -1,4 +1,5 @@
 #include <menu.h>
+#include <math_utils.h>
 
 using namespace so;
 
@@ -92,11 +93,13 @@ void Menu::update()
 		if (m_app.getInputContext().actionActivated(SonoroAction::UP))
 		{
 			m_currentSelection++;
+			m_currentSelection = MathUtils::clamp(0, (int)m_menuIndexToPAIndex.size(), m_currentSelection);
 			reset();
 		}
 		else if (m_app.getInputContext().actionActivated(SonoroAction::DOWN))
 		{
 			m_currentSelection--;
+			m_currentSelection = MathUtils::clamp(0, (int)m_menuIndexToPAIndex.size(), m_currentSelection);
 			reset();
 		}
 	}

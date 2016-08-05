@@ -17,8 +17,7 @@ void LineScene::update()
 	float w = (float)m_app.getRenderContext().getWindowWidth();
 	float h = (float)m_app.getRenderContext().getWindowHeight();
 
-	float *samples = m_app.getAudioContext().getSamples();
-	float *frequencies = m_app.getAudioContext().getSampleFrequencies();
+	float *samples = m_app.getAudioContext().getProcessedSamples();
 
 	for (int i = 0; i < AC_OUT_SIZE; i++)
 	{

@@ -130,7 +130,7 @@ int Sonoro::run()
 			currentSceneIndex--;
 			if (currentSceneIndex == -1)
 			{
-				currentSceneIndex = scenes.size() - 1;
+				currentSceneIndex = (int)scenes.size() - 1;
 			}
 		}
 		else
@@ -160,6 +160,7 @@ int Sonoro::run()
 			m_info.appendln("Smoothing: " + std::to_string(m_audioContext.getSmoothing()));
 			m_info.append("Hann Window: " + std::to_string(m_audioContext.getHannWindowEnabled()));
 			m_info.appendln(", A Weighting: " + std::to_string(m_audioContext.getAWeightingEnabled()));
+			m_info.appendln("Current scene: " + currentScene->sceneName());
 			m_info.setPosition(0, m_renderContext.getWindowHeight() - m_info.getRect()->h);
 
 			SDL_Texture *infoTex = m_info.getTexture(m_renderContext);

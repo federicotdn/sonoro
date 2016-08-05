@@ -196,6 +196,10 @@ void AudioContext::processSamples()
 {
 	if (!m_initialized || m_instream == nullptr || Pa_IsStreamActive(m_instream) == 0)
 	{
+		for (int i = 0; i < DEFAULT_FRAMES_PER_BUFFER; i++) {
+			m_inBuf[i] = 0;
+		}
+
 		for (int i = 0; i < AC_OUT_SIZE; i++)
 		{
 			m_processedSamples[i] = 0; 

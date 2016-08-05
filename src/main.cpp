@@ -5,7 +5,7 @@
 #include <input_context.h>
 #include <sonoro.h>
 
-int main(int argc, char *argv[])
+int main(int, char**)
 {
 	std::cout << "Starting..." << std::endl;
 
