@@ -14,6 +14,8 @@ InputContext::InputContext()
 		{ SDLK_o, SMOOTH_DOWN },
 		{ SDLK_UP, UP },
 		{ SDLK_DOWN, DOWN },
+		{ SDLK_RIGHT, RIGHT },
+		{ SDLK_LEFT, LEFT },
 		{ SDLK_RETURN, SELECT },
 		{ SDLK_ESCAPE, EXIT },
 		{ SDLK_a, TOGGLE_AWEIGHTING },

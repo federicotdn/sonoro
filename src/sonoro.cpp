@@ -9,6 +9,8 @@
 
 #include <SDL.h>
 
+#define SMOOTHING_STEP 0.01f
+
 using namespace so;
 
 Sonoro::Sonoro(RenderContext &renderContext, AudioContext &audioContext, InputContext &inputContext) :
@@ -25,7 +27,6 @@ Sonoro::~Sonoro()
 
 int Sonoro::initialize()
 {
-	int w = m_renderContext.getWindowWidth();
 	int h = m_renderContext.getWindowHeight();
 
 	if (m_info.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE * 25))
@@ -229,10 +230,11 @@ void Sonoro::checkGlobalActions()
 {
 	if (m_inputContext.actionActivated(SonoroAction::SMOOTH_DOWN))
 	{
-		m_audioContext.addSmoothing(-0.01f);
+		m_audioContext.addSmoothing(-SMOOTHING_STEP);
 	}
-	else if (m_inputContext.actionActivated(SonoroAction::SMOOTH_UP)) {
-		m_audioContext.addSmoothing(0.01f);
+	else if (m_inputContext.actionActivated(SonoroAction::SMOOTH_UP))
+	{
+		m_audioContext.addSmoothing(SMOOTHING_STEP);
 	}
 
 	if (m_inputContext.actionActivated(SonoroAction::TOGGLE_AWEIGHTING))

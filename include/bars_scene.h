@@ -20,6 +20,7 @@ namespace so
 
 	private:
 		int m_barDataWidth;
+		float m_smoothing;
 		SDL_Rect m_rects[AC_OUT_SIZE];
 	};
 }

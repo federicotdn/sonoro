@@ -14,7 +14,7 @@ AudioContext::AudioContext() :
 	m_backBuffers{0},
 	m_lastBackBuffer(0),
 	m_smoothing(DEFAULT_SMOOTHING),
-	m_hannWindowEnabled(false),
+	m_hannWindowEnabled(true),
 	m_aWeightingEnabled(true)
 {
 }
@@ -233,8 +233,9 @@ void AudioContext::processSamples()
 	}
 
 	int j = 0;
-	for (int i = 0; i < AC_OUT_SIZE; i++)
+	for (int i = AC_RAW_OUT_OFFSET; i < AC_OUT_SIZE; i++)
 	{
+		int outputIndex = i - AC_RAW_OUT_OFFSET;
 		float real = m_outBuf[i][0];
 		float imag = m_outBuf[i][1];
 
@@ -256,13 +257,13 @@ void AudioContext::processSamples()
 			currentBackBuffer++;
 		}
 
-		real /= (DEFAULT_BACK_BUFFER_COUNT - 1);
-		imag /= (DEFAULT_BACK_BUFFER_COUNT - 1);
+		realBuffered /= (DEFAULT_BACK_BUFFER_COUNT - 1);
+		imagBuffered /= (DEFAULT_BACK_BUFFER_COUNT - 1);
 		fftwf_complex averagedSample;
 		averagedSample[0] = real * (1 - m_smoothing) + realBuffered * m_smoothing;
 		averagedSample[1] = imag * (1 - m_smoothing) + imagBuffered * m_smoothing;
 
-		m_processedSamples[i] = sampleToDb(averagedSample);
+		m_processedSamples[outputIndex] = sampleToDb(averagedSample);
 
 		if (m_aWeightingEnabled)
 		{
@@ -289,17 +290,17 @@ void AudioContext::processSamples()
 				aWeightDb = db0 + (db1 - db0) * ((m_sampleFrequencies[i] - freq0) / (freq1 - freq0));
 			}
 
-			m_processedSamples[i] += aWeightDb;
+			m_processedSamples[outputIndex] += aWeightDb;
 		}
 
-		if (m_processedSamples[i] > maxSample)
+		if (m_processedSamples[outputIndex] > maxSample)
 		{
-			maxSample = m_processedSamples[i];
+			maxSample = m_processedSamples[outputIndex];
 		}
 
-		if (m_processedSamples[i] < minSample)
+		if (m_processedSamples[outputIndex] < minSample)
 		{
-			minSample = m_processedSamples[i];
+			minSample = m_processedSamples[outputIndex];
 		}
 	}
 

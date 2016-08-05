@@ -12,15 +12,17 @@
 #define DEFAULT_CHAN_COUNT 1
 #define DEFAULT_FRAMES_PER_BUFFER 512
 #define DEFAULT_SAMPLE_RATE 44100
-#define DEFAULT_SMOOTHING 0.05f
-#define DEFAULT_BACK_BUFFER_COUNT 25
+#define DEFAULT_SMOOTHING 0.95f
+#define DEFAULT_BACK_BUFFER_COUNT 35
 
 #define AC_IN_SIZE DEFAULT_FRAMES_PER_BUFFER
 
 #define AC_RAW_OUT_SIZE ((DEFAULT_FRAMES_PER_BUFFER / 2) + 1)
-// Use only values in 0-10k Hz range
-#define AC_OUT_SIZE (AC_RAW_OUT_SIZE / 2)
+// Skip first value of m_outBuf
+#define AC_RAW_OUT_OFFSET 1
 
+// Use only values in 0-10k Hz range
+#define AC_OUT_SIZE ((AC_RAW_OUT_SIZE / 2) - 1)
 
 namespace so
 {

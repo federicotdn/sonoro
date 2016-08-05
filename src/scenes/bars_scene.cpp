@@ -1,12 +1,15 @@
 #include <bars_scene.h>
 #include <math_utils.h>
 
+#define SMOOTHING_STEP 0.05f
+
 using namespace so;
 
 BarsScene::BarsScene(Sonoro &app) :
 	Scene(app),
 	m_rects{ 0 },
-	m_barDataWidth(DEFAULT_BAR_DATA_WIDTH)
+	m_barDataWidth(DEFAULT_BAR_DATA_WIDTH),
+	m_smoothing(0.5f)
 {
 }
 
@@ -25,7 +28,17 @@ void BarsScene::update()
 		m_barDataWidth--;
 	}
 
+	if (m_app.getInputContext().actionActivated(SonoroAction::RIGHT))
+	{
+		m_smoothing += SMOOTHING_STEP;
+	}
+	else if (m_app.getInputContext().actionActivated(SonoroAction::LEFT))
+	{
+		m_smoothing -= SMOOTHING_STEP;
+	}
+
 	m_barDataWidth = MathUtils::clamp(1, 10, m_barDataWidth);
+	m_smoothing = MathUtils::clamp(0.0f, 1.0f, m_smoothing);
 
 	float w = (float)m_app.getRenderContext().getWindowWidth();
 	float h = (float)m_app.getRenderContext().getWindowHeight();
@@ -44,7 +57,8 @@ void BarsScene::update()
 		}
 		val /= m_barDataWidth;
 		
-		m_rects[i].h = (int)(val * h);
+		m_rects[i].h = (int)((val * h) * (1 - m_smoothing) + m_rects[i].h * m_smoothing);
+
 		m_rects[i].w = (int)barWidth;
 		m_rects[i].y = (int)(h - m_rects[i].h);
 		m_rects[i].x = (int)(i * barWidth);
