@@ -25,10 +25,12 @@ namespace so
 
 	private:
 		void reset();
+		void updateCircle(bool initial);
 
 		TextRenderer m_info;
 		int m_currentSelection;
 		std::map<int, int> m_menuIndexToPAIndex;
+		SDL_Point m_points[AC_OUT_SIZE];
 	};
 }
 

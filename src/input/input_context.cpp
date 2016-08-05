@@ -20,7 +20,8 @@ InputContext::InputContext()
 		{ SDLK_ESCAPE, EXIT },
 		{ SDLK_a, TOGGLE_AWEIGHTING },
 		{ SDLK_w, TOGGLE_HANNWINDOW },
-		{ SDLK_h, HELP }
+		{ SDLK_h, HELP },
+		{ SDLK_f, TOGGLE_FULLSCREEN }
 	};
 	// ==== End Keyboard Bindings ====
 

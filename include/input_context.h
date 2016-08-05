@@ -23,7 +23,8 @@ namespace so
 		EXIT,
 		TOGGLE_AWEIGHTING,
 		TOGGLE_HANNWINDOW,
-		HELP
+		HELP,
+		TOGGLE_FULLSCREEN
 	};
 
 	struct KbBinding {

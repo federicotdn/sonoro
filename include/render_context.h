@@ -21,13 +21,16 @@ namespace so
 		SDL_Renderer *getRenderer() { return m_renderer; }
 		int getWindowHeight();
 		int getWindowWidth();
-	
+		void setFullscreen(bool enabled);
+		bool getFullscreen() { return m_fullscreen; }
+
 	private:
 		SDL_Window *m_window;
 		SDL_Renderer *m_renderer;
 		SDL_GLContext m_glContext;
 		std::string m_error;
 		bool m_initialized;
+		bool m_fullscreen;
 	};
 }
 

@@ -7,7 +7,8 @@ RenderContext::RenderContext() :
 	m_window(nullptr),
 	m_renderer(nullptr),
 	m_glContext(nullptr),
-	m_initialized(false)
+	m_initialized(false),
+	m_fullscreen(false)
 {
 }
 
@@ -105,4 +106,10 @@ int RenderContext::getWindowWidth()
 	int w;
 	SDL_GetWindowSize(m_window, &w, nullptr);
 	return w;
+}
+
+void RenderContext::setFullscreen(bool enabled)
+{
+	SDL_SetWindowFullscreen(m_window, enabled ? SDL_WINDOW_FULLSCREEN : 0);
+	m_fullscreen = enabled;
 }

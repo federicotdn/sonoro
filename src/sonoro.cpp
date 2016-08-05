@@ -62,6 +62,7 @@ void Sonoro::setupHelpPanel()
 	m_help.appendln(" - 'a' toggles A Weighting.");
 	m_help.appendln(" - 'w' toggles Hann Window function usage.");
 	m_help.appendln(" - 'h' toggles the Help dialogue.");
+	m_help.appendln(" - 'f' toggles fullscreen mode.");
 	m_help.appendln(" - Use the Menu scene to select the audio input device.");
 	m_help.appendln(" - Press ESC to quit.");
 	m_help.setBackgroundColor({ 115, 0, 105 });
@@ -245,5 +246,10 @@ void Sonoro::checkGlobalActions()
 	if (m_inputContext.actionActivated(SonoroAction::TOGGLE_HANNWINDOW))
 	{
 		m_audioContext.setHannWindowEnabled(!m_audioContext.getHannWindowEnabled());
+	}
+
+	if (m_inputContext.actionActivated(SonoroAction::TOGGLE_FULLSCREEN))
+	{
+		m_renderContext.setFullscreen(!m_renderContext.getFullscreen());
 	}
 }
