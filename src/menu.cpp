@@ -88,20 +88,20 @@ void Menu::updateCircle(bool initial)
 		float y = r * sinf(2 * PI_FLOAT * pctg) + yOffset;
 		if (initial)
 		{
-			m_points[i].x = x;
-			m_points[i].y = y;
+			m_points[i].x = (int)x;
+			m_points[i].y = (int)y;
 		}
 		else
 		{
-			m_points[i].x = (x + m_points[i].x) / 2;
-			m_points[i].y = (y + m_points[i].y) / 2;
+			m_points[i].x = (int)((x + m_points[i].x) / 2);
+			m_points[i].y = (int)((y + m_points[i].y) / 2);
 		}
 	}
 	
 	// Tie the ends
-	float xAvg = (m_points[0].x + m_points[AC_OUT_SIZE - 1].x) / 2;
-	m_points[0].x = xAvg;
-	m_points[AC_OUT_SIZE - 1].x = xAvg;
+	float xAvg = (float)(m_points[0].x + m_points[AC_OUT_SIZE - 1].x) / 2;
+	m_points[0].x = (int)xAvg;
+	m_points[AC_OUT_SIZE - 1].x = (int)xAvg;
 }
 
 void Menu::update()

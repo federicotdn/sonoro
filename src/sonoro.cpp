@@ -102,6 +102,7 @@ int Sonoro::run()
 		}
 		else
 		{
+			std::cout << "Scene: " + initialScenes[i]->sceneName() + " loaded." << std::endl;
 			scenes.push_back(initialScenes[i]);
 		}
 	}

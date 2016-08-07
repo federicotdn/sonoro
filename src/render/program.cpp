@@ -6,7 +6,7 @@ using namespace so;
 
 Program::Program(std::vector<ShaderInfo> shaderList) :
 	m_shaderList(shaderList),
-	m_object(-1)
+	m_object(0)
 {
 }
 
@@ -15,7 +15,7 @@ Program::~Program()
 	if (isReady())
 	{
 		glDeleteProgram(m_object);
-		m_object = -1;
+		m_object = 0;
 	}
 }
 
@@ -96,7 +96,7 @@ int Program::load()
 			glDeleteShader(shaderObjects[i]);
 		}
 
-		m_object = -1;
+		m_object = 0;
 		return -1;
 	}
 
@@ -127,7 +127,7 @@ int Program::load()
 		delete[] infoLog;
 
 		glDeleteProgram(m_object);
-		m_object = -1;
+		m_object = 0;
 
 		return -1;
 	}

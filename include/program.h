@@ -20,7 +20,7 @@ namespace so
 
 		int load();
 		std::string getError() { return m_error; }
-		bool isReady() { return m_object != -1; }
+		bool isReady() { return m_object != 0; }
 		GLuint getObject() { return m_object; }
 
 	private:
