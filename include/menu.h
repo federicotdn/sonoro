@@ -19,7 +19,7 @@ namespace so
 		void draw() override;
 		void update() override;
 
-		std::string sceneName() { return "Menu"; }
+		std::string sceneName() override { return "Menu"; }
 
 		void showInputDevices();
 

@@ -8,7 +8,8 @@ RenderContext::RenderContext() :
 	m_renderer(nullptr),
 	m_glContext(nullptr),
 	m_initialized(false),
-	m_fullscreen(false)
+	m_fullscreen(false),
+	m_activeProgram(-1)
 {
 }
 
@@ -20,8 +21,8 @@ RenderContext::~RenderContext()
 	}
 
 	TTF_Quit();
-	SDL_GL_DeleteContext(m_glContext);
 	SDL_DestroyRenderer(m_renderer);
+	SDL_GL_DeleteContext(m_glContext);
 	SDL_DestroyWindow(m_window);
 	SDL_Quit();
 }
@@ -57,6 +58,7 @@ int RenderContext::initialize(int win_width, int win_height)
 	if (m_glContext == nullptr)
 	{
 		m_error = "Unable to create GL context.";
+		SDL_DestroyWindow(m_window);
 		SDL_Quit();
 		return -1;
 	}
@@ -65,6 +67,8 @@ int RenderContext::initialize(int win_width, int win_height)
 	if (glewInit() != GLEW_OK || !GLEW_VERSION_3_2)
 	{
 		m_error = "Unable to initialize GLEW.";
+		SDL_GL_DeleteContext(m_glContext);
+		SDL_DestroyWindow(m_window);
 		SDL_Quit();
 		return -1;
 	}
@@ -83,8 +87,8 @@ int RenderContext::initialize(int win_width, int win_height)
 	if (TTF_Init())
 	{
 		m_error = "Unable to initialize SDL_TTF";
-		SDL_GL_DeleteContext(m_glContext);
 		SDL_DestroyRenderer(m_renderer);
+		SDL_GL_DeleteContext(m_glContext);
 		SDL_DestroyWindow(m_window);
 		SDL_Quit();
 		return -1;
@@ -112,4 +116,13 @@ void RenderContext::setFullscreen(bool enabled)
 {
 	SDL_SetWindowFullscreen(m_window, enabled ? SDL_WINDOW_FULLSCREEN : 0);
 	m_fullscreen = enabled;
+}
+
+void RenderContext::useProgram(Program &program)
+{
+	GLuint obj = program.getObject();
+	if (m_activeProgram != obj)
+	{
+		glUseProgram(obj);
+	}
 }

@@ -1,13 +1,14 @@
 #include <iostream>
 
 #include <sonoro.h>
-#include <menu.h>
 #include <scene.h>
+#include <SDL.h>
 
+// Scenes
+#include <menu.h>
 #include <line_scene.h>
 #include <bars_scene.h>
-
-#include <SDL.h>
+#include <test_scene.h>
 
 #define SMOOTHING_STEP 0.01f
 
@@ -84,7 +85,8 @@ int Sonoro::run()
 	{
 		new Menu(*this),
 		new BarsScene(*this),
-		new LineScene(*this)
+		new LineScene(*this),
+		new TestScene(*this)
 	};
 	// =========================================
 

@@ -22,7 +22,7 @@
 #define AC_RAW_OUT_OFFSET 1
 
 // Use only values in 0-10k Hz range
-#define AC_OUT_SIZE ((AC_RAW_OUT_SIZE / 2) - 1)
+#define AC_OUT_SIZE (AC_RAW_OUT_SIZE / 2)
 
 namespace so
 {

@@ -14,7 +14,7 @@ namespace so
 		void update() override;
 		void draw() override;
 
-		std::string sceneName() { return "Line Scene"; }
+		std::string sceneName() override { return "Line Scene"; }
 	
 	private:
 		SDL_Point m_points[AC_OUT_SIZE];

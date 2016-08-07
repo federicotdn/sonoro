@@ -116,21 +116,25 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\asset_loader.cpp" />
     <ClCompile Include="src\audio\audio_context.cpp" />
     <ClCompile Include="src\input\input_context.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\render\program.cpp" />
     <ClCompile Include="src\render\render_context.cpp" />
     <ClCompile Include="src\render\text_renderer.cpp" />
     <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\scenes\bars_scene.cpp" />
     <ClCompile Include="src\scenes\line_scene.cpp" />
     <ClCompile Include="src\sonoro.cpp" />
+    <ClCompile Include="src\test_scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\asset_loader.h" />
     <ClInclude Include="include\audio_context.h" />
     <ClInclude Include="include\a_weighting.h" />
     <ClInclude Include="include\bars_scene.h" />
@@ -139,8 +143,10 @@
     <ClInclude Include="include\line_scene.h" />
     <ClInclude Include="include\math_utils.h" />
     <ClInclude Include="include\menu.h" />
+    <ClInclude Include="include\program.h" />
     <ClInclude Include="include\render_context.h" />
     <ClInclude Include="include\scene.h" />
+    <ClInclude Include="include\test_scene.h" />
     <ClInclude Include="include\text_renderer.h" />
     <ClInclude Include="include\sonoro.h" />
   </ItemGroup>

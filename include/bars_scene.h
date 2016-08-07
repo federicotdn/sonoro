@@ -16,7 +16,7 @@ namespace so
 		void update() override;
 		void draw() override;
 
-		std::string sceneName() { return "Bars Scene"; }
+		std::string sceneName() override { return "Bars Scene"; }
 
 	private:
 		int m_barDataWidth;
