@@ -4,8 +4,6 @@
 #include <string>
 
 #include <render_context.h>
-#include <SDL.h>
-#include <SDL_ttf.h>
 
 namespace so
 {

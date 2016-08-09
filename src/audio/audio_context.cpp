@@ -1,6 +1,9 @@
 #include <audio_context.h>
 #include <a_weighting.h>
 
+#include <math.h>
+#include <limits>
+
 using namespace so;
 
 AudioContext::AudioContext() :

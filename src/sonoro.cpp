@@ -2,7 +2,6 @@
 
 #include <sonoro.h>
 #include <scene.h>
-#include <SDL.h>
 
 // Scenes
 #include <menu.h>
