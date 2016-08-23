@@ -2,9 +2,17 @@
 #define ASSET_LOADER_H
 
 #include <string>
+#include <vector>
+#include <glm/vec3.hpp>
 
 namespace so
 {
+	struct Asset3DModel {
+		std::vector<glm::vec3> m_vertices;
+		std::vector<glm::vec3> m_normals;
+		std::vector<glm::vec2> m_uvs;
+	};
+
 	class AssetLoader
 	{
 	public:
