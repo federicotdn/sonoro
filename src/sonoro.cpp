@@ -78,7 +78,7 @@ int Sonoro::run()
 	}
 
 	SDL_Renderer *ren = m_renderContext.getRenderer();
-	Uint32 lastTicks = SDL_GetTicks() - 1;
+	Uint32 lastTicks = SDL_GetTicks();
 
 	// ============ ADD SCENES HERE ============
 	std::vector<Scene*> initialScenes =
@@ -129,6 +129,16 @@ int Sonoro::run()
 		// Process audio
 		m_audioContext.processSamples();
 
+		// Update FPS and delta ms
+		Uint32 currentTicks = SDL_GetTicks();
+		Uint32 difference = currentTicks - lastTicks;
+		lastTicks = currentTicks;
+		if (loopTicks % 10 == 0)
+		{
+			fps = 1000 / (difference != 0 ? difference : 1);
+		}
+		m_renderContext.setDeltaMs(difference);
+
 		// Update
 		
 		bool skipSceneDraw = false;
@@ -170,14 +180,6 @@ int Sonoro::run()
 		else
 		{
 			currentScene->update();
-		}
-
-		Uint32 currentTicks = SDL_GetTicks();
-		Uint32 difference = currentTicks - lastTicks;
-		lastTicks = currentTicks;
-		if (loopTicks % 10 == 0)
-		{
-			fps = 1000 / (difference != 0 ? difference : 1);
 		}
 
 		// Draw

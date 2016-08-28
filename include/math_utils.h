@@ -1,6 +1,8 @@
 #ifndef MATH_UTILS_H
 #define MATH_UTILS_H
 
+#include <cstdlib>
+
 namespace so
 {
 	class MathUtils
@@ -18,6 +20,17 @@ namespace so
 			}
 
 			return val;
+		}
+
+		template<class T> static inline T lerp(T a, T b, T t)
+		{
+			t = clamp((T)0, (T)1, t);
+			return a + (b - a) * t;
+		}
+
+		static float rand()
+		{
+			return (float)std::rand() / (RAND_MAX + 1);
 		}
 	};
 

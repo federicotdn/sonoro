@@ -45,6 +45,11 @@ bool InputContext::actionActivated(SonoroAction action)
 	return m_keyboard[m_keyboardBindings[action]];
 }
 
+bool InputContext::sdlKeyActivated(int sdlCode)
+{
+	return m_keyboard[sdlCode];
+}
+
 void InputContext::pollKeyboard()
 {
 	m_keyboard.clear();

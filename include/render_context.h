@@ -29,6 +29,9 @@ namespace so
 		void setFullscreen(bool enabled);
 		bool getFullscreen() { return m_fullscreen; }
 
+		void setDeltaMs(Uint32 ms) { m_deltaMs = ms; }
+		Uint32 getDeltaMs() { return m_deltaMs; }
+
 		void useProgram(Program &program);
 
 	private:
@@ -39,6 +42,7 @@ namespace so
 		bool m_initialized;
 		bool m_fullscreen;
 		GLuint m_activeProgram;
+		Uint32 m_deltaMs;
 	};
 }
 

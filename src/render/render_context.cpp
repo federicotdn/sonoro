@@ -9,7 +9,8 @@ RenderContext::RenderContext() :
 	m_glContext(nullptr),
 	m_initialized(false),
 	m_fullscreen(false),
-	m_activeProgram(0)
+	m_activeProgram(0),
+	m_deltaMs(0)
 {
 }
 

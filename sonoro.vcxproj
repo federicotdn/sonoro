@@ -125,13 +125,13 @@
     <ClCompile Include="src\render\program.cpp" />
     <ClCompile Include="src\render\render_context.cpp" />
     <ClCompile Include="src\render\text_renderer.cpp" />
-    <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\render\world_object.cpp" />
     <ClCompile Include="src\scenes\bars_scene.cpp" />
     <ClCompile Include="src\scenes\line_scene.cpp" />
+    <ClCompile Include="src\scenes\menu.cpp" />
     <ClCompile Include="src\scenes\superformula_scene.cpp" />
+    <ClCompile Include="src\scenes\test_scene.cpp" />
     <ClCompile Include="src\sonoro.cpp" />
-    <ClCompile Include="src\test_scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

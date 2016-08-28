@@ -41,6 +41,7 @@ namespace so
 		void pollInputs();
 		
 		bool actionActivated(SonoroAction action);
+		bool sdlKeyActivated(int sdlCode);
 
 	private:
 		void pollKeyboard();
