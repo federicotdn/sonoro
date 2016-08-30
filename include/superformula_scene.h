@@ -2,7 +2,7 @@
 #define SUPERFORMULA_H
 
 #define POINT_COUNT 500
-#define MEAN_HIST_SIZE 50
+#define MEAN_HIST_SIZE 10
 
 #include <scene.h>
 
@@ -40,6 +40,7 @@ namespace so
 		Uint32 m_msCounter;
 		float m_prevMean;
 		float m_meanTolerance;
+		float m_spikeLen;
 	};
 }
 

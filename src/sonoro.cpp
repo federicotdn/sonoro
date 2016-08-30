@@ -66,6 +66,7 @@ void Sonoro::setupHelpPanel()
 	m_help.appendln(" - 'w' toggles Hann Window function usage.");
 	m_help.appendln(" - 'h' toggles the Help dialogue.");
 	m_help.appendln(" - 'f' toggles fullscreen mode.");
+	m_help.appendln(" - Tap 'b' to mark the beat.");
 	m_help.appendln(" - Use the Menu scene to select the audio input device.");
 	m_help.appendln(" - Press ESC to quit.");
 	m_help.setBackgroundColor({ 115, 0, 105 });
@@ -141,7 +142,11 @@ int Sonoro::run()
 		{
 			fps = 1000 / (difference != 0 ? difference : 1);
 		}
+		
+		bool marked = m_inputContext.actionActivated(SonoroAction::MARK_BEAT);
+
 		m_renderContext.setDeltaMs(difference);
+		m_audioContext.updateBeat(difference, marked);
 
 		// Update
 		
@@ -229,7 +234,11 @@ int Sonoro::run()
 void Sonoro::updateHud(int fps, std::string sceneName)
 {
 	m_info.clear();
-	m_info.appendln("FPS: " + std::to_string(fps));
+
+	int bpm = m_audioContext.getBPM();
+	std::string bpmModified = m_audioContext.isSettingBPM() ? " (!)" : "";
+
+	m_info.appendln("FPS: " + std::to_string(fps) + " BPM: " + std::to_string(bpm) + bpmModified);
 	m_info.appendln("Smoothing: " + std::to_string(m_audioContext.getSmoothing()));
 	m_info.append("Hann Window: " + std::to_string(m_audioContext.getHannWindowEnabled()));
 	m_info.appendln(", A Weighting: " + std::to_string(m_audioContext.getAWeightingEnabled()));

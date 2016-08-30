@@ -63,6 +63,10 @@ namespace so
 		void setAWeightingEnabled(bool enabled);
 		bool getAWeightingEnabled() { return m_aWeightingEnabled; }
 
+		void updateBeat(uint32_t msElapsed, bool beatMarked);
+		bool onBeat();
+		int getBPM();
+		bool isSettingBPM();
 
 		std::string deviceName(int index);
 		std::vector<int> inputDeviceList();
@@ -70,9 +74,17 @@ namespace so
 
 	private:
 		float sampleToDb(fftwf_complex c);
+		void initializeSampleStructs();
 
 		bool m_initialized;
 		std::string m_error;
+
+		uint32_t m_msLastBeat;
+		uint32_t m_msBetweenBeats;
+		uint32_t m_msBeatSetTimeoutCounter;
+		uint32_t m_msBeatSetPeriod;
+		bool m_onBeat;
+		int m_beatCount;
 
 		/* PortAudio */
 		PaStream *m_instream;

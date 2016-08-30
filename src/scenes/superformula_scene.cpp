@@ -2,14 +2,18 @@
 #include <iostream>
 #include <math_utils.h>
 
-#define ROTATION_STEP -0.001f;
+#define ROTATION_STEP -0.001f
 #define TRANSITION_DURATION_MS 4000
 #define WAIT_DURATION_MS 500
 
 #define MEAN_DELTA_TOLERANCE 0.1f
-#define RADIUS_MULTIPLIER 500.0f
+#define RADIUS_MULTIPLIER 300.0f
 #define MIN_VISIBLE_RADIUS 1.0f
 #define MAX_VISIBLE_RADIUS 1000.0f
+
+#define MIN_SPIKE_LEN 0
+#define MAX_SPIKE_LEN 250
+#define SPIKE_STEP 5.0f
 
 using namespace so;
 
@@ -21,7 +25,8 @@ SuperformulaScene::SuperformulaScene(Sonoro & app) :
 	m_prevMean(0),
 	m_lastEval{0},
 	m_meanTolerance(MEAN_DELTA_TOLERANCE),
-	m_lastMeans{0}
+	m_lastMeans{0},
+	m_spikeLen(MIN_SPIKE_LEN)
 {
 	// m: rotational symmetry
 	// n1, n2, n3: form
@@ -69,14 +74,10 @@ void SuperformulaScene::update()
 	m_lastMeans[MEAN_HIST_SIZE - 1] = mean;
 	histMean /= MEAN_HIST_SIZE;
 
-	bool spike = false;
-	if (fabs(mean - histMean) > m_meanTolerance)
+	bool beat = m_app.getAudioContext().onBeat();
+	if (beat)
 	{
-		spike = true;
-	}
-	else
-	{
-		m_currentRotation += mean / 10.0f;
+		m_currentRotation += ROTATION_STEP * -10.0f;
 	}
 
 	m_currentRotation += ROTATION_STEP;
@@ -90,6 +91,9 @@ void SuperformulaScene::update()
 		m_currentRotation += 2 * PI_FLOAT;
 	}
 
+	m_spikeLen += -SPIKE_STEP + (beat ? 80 : 0);
+	m_spikeLen = MathUtils::clamp<int>(MIN_SPIKE_LEN, MAX_SPIKE_LEN, (int)m_spikeLen);
+
 	float radiusMean = 0;
 
 	for (int i = 0; i < POINT_COUNT; i++)
@@ -98,7 +102,7 @@ void SuperformulaScene::update()
 		float angle = pctg * 2 * PI_FLOAT;
 		float result = superformula(angle);
 		float r = ((result + m_lastEval[i]) / 2) * histMean * RADIUS_MULTIPLIER;
-		r *= spike ? 1.2f : 1.0f;
+		r += m_spikeLen;
 		m_lastEval[i] = result;
 
 		radiusMean += r;

@@ -4,6 +4,9 @@
 #include <math.h>
 #include <limits>
 
+#define MIN_BPM 50.0f
+#define BPM_SET_TIMEOUT 3000.0f
+
 using namespace so;
 
 AudioContext::AudioContext() :
@@ -19,8 +22,15 @@ AudioContext::AudioContext() :
 	m_smoothing(DEFAULT_SMOOTHING),
 	m_hannWindowEnabled(true),
 	m_aWeightingEnabled(true),
-	m_rawSamples()
+	m_rawSamples(),
+	m_msLastBeat(0),
+	m_onBeat(false),
+	m_beatCount(0),
+	m_msBetweenBeats(1000 * (60.0f / MIN_BPM)),
+	m_msBeatSetPeriod(0),
+	m_msBeatSetTimeoutCounter(BPM_SET_TIMEOUT + 1)
 {
+	initializeSampleStructs();
 }
 
 AudioContext::~AudioContext()
@@ -45,6 +55,13 @@ AudioContext::~AudioContext()
 	}
 
 	Pa_Terminate();
+}
+
+void AudioContext::initializeSampleStructs()
+{
+	m_rawSamples.samples = m_inBuf;
+	m_rawSamples.max = m_rawSamples.min = m_rawSamples.mean = 0;
+	m_rawSamples.samplesSize = AC_IN_SIZE;
 }
 
 int AudioContext::initialize()
@@ -208,6 +225,8 @@ void AudioContext::processSamples()
 		{
 			m_processedSamples[i] = 0; 
 		}
+
+		initializeSampleStructs();
 
 		return;
 	}
@@ -379,6 +398,63 @@ void AudioContext::setHannWindowEnabled(bool enabled)
 void AudioContext::setAWeightingEnabled(bool enabled)
 {
 	m_aWeightingEnabled = enabled;
+}
+
+void AudioContext::updateBeat(uint32_t msElapsed, bool beatMarked)
+{
+	m_onBeat = false;
+
+	if (m_msBeatSetTimeoutCounter < BPM_SET_TIMEOUT)
+	{
+		m_msBeatSetTimeoutCounter += msElapsed;
+		m_msBeatSetPeriod += msElapsed;
+	}
+
+	if (!beatMarked)
+	{
+		m_msLastBeat += msElapsed;
+		if (m_msLastBeat > m_msBetweenBeats)
+		{
+			m_onBeat = true;
+			m_msLastBeat = 0;
+		}
+	}
+	else
+	{
+		m_onBeat = true;
+		m_msLastBeat = 0;
+		
+		if (m_msBeatSetTimeoutCounter > BPM_SET_TIMEOUT)
+		{
+			m_msBeatSetTimeoutCounter = 0;
+			m_beatCount = 0;
+			m_msBeatSetPeriod = 0;
+		}
+		else
+		{
+			m_msBeatSetTimeoutCounter = 0;
+			m_beatCount++;
+
+			double beatSeparation = (double)m_msBeatSetPeriod / m_beatCount;
+			m_msBetweenBeats = (uint32_t)beatSeparation;
+		}
+	}
+}
+
+bool AudioContext::onBeat()
+{
+	return m_onBeat;
+}
+
+int AudioContext::getBPM()
+{
+	double separation = 60.0 * 1000.0 / (double)m_msBetweenBeats;
+	return (int)separation;
+}
+
+bool AudioContext::isSettingBPM()
+{
+	return m_msBeatSetTimeoutCounter < BPM_SET_TIMEOUT;
 }
 
 std::string AudioContext::deviceName(int index)

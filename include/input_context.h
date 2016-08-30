@@ -24,7 +24,8 @@ namespace so
 		TOGGLE_AWEIGHTING,
 		TOGGLE_HANNWINDOW,
 		HELP,
-		TOGGLE_FULLSCREEN
+		TOGGLE_FULLSCREEN,
+		MARK_BEAT
 	};
 
 	struct KbBinding {

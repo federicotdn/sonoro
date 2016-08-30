@@ -8,9 +8,7 @@ using namespace so;
 
 BeatScene::BeatScene(Sonoro & app) :
 	Scene(app),
-	m_size(MIN_SIZE),
-	m_lastMean(0),
-	m_meanTolerance(0.1f)
+	m_size(MIN_SIZE)
 {
 }
 
@@ -22,20 +20,9 @@ void BeatScene::update()
 {
 	m_size -= SIZE_STEP;
 
-	if (m_app.getInputContext().actionActivated(SonoroAction::UP))
-	{
-		m_meanTolerance += 0.01f;
-	}
-	else if (m_app.getInputContext().actionActivated(SonoroAction::DOWN))
-	{
-		m_meanTolerance -= 0.01f;
-	}
+	bool beat = m_app.getAudioContext().onBeat();
 
-	AudioContext::Samples &rawSamples = m_app.getAudioContext().getRawSamples();
-	float mean = (rawSamples.mean - rawSamples.min) / (rawSamples.max - rawSamples.min);
-	bool spike = (fabs(mean - m_lastMean) > m_meanTolerance);
-
-	if (m_app.getInputContext().actionActivated(SonoroAction::UP) || spike)
+	if (m_app.getInputContext().actionActivated(SonoroAction::UP) || beat)
 	{
 		m_size += 200;
 	}
@@ -48,8 +35,6 @@ void BeatScene::update()
 	{
 		m_size = MAX_SIZE;
 	}
-
-	m_lastMean = mean;
 }
 
 void BeatScene::draw()
@@ -61,7 +46,7 @@ void BeatScene::draw()
 
 	SDL_Rect rect;
 
-	rect.w = rect.h = m_size;
+	rect.w = rect.h = (int)m_size;
 	rect.x = (int)((w / 2) - (m_size / 2));
 	rect.y = (int)((h / 2) - (m_size / 2));
 

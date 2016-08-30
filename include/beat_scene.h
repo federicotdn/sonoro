@@ -18,8 +18,6 @@ namespace so
 
 	private:
 		float m_size;
-		float m_lastMean;
-		float m_meanTolerance;
 	};
 }
 
