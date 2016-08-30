@@ -19,8 +19,6 @@ namespace so
 
 	private:
 		SDL_Point m_points[AC_IN_SIZE];
-		float m_lastMean;
-		float m_meanTolerance;
 	};
 }
 
