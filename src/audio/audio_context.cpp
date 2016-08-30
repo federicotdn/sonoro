@@ -18,7 +18,8 @@ AudioContext::AudioContext() :
 	m_lastBackBuffer(0),
 	m_smoothing(DEFAULT_SMOOTHING),
 	m_hannWindowEnabled(true),
-	m_aWeightingEnabled(true)
+	m_aWeightingEnabled(true),
+	m_rawSamples()
 {
 }
 
@@ -214,19 +215,46 @@ void AudioContext::processSamples()
 	// Returns PaInputOverflowed if data was discarded (ignore)
 	Pa_ReadStream(m_instream, m_inBuf, DEFAULT_FRAMES_PER_BUFFER);
 
-	if (m_hannWindowEnabled)
+	float maxSample = std::numeric_limits<float>::lowest();
+	float minSample = std::numeric_limits<float>::max();
+	float mean = 0;
+
+	for (int i = 0; i < DEFAULT_FRAMES_PER_BUFFER; i++)
 	{
-		for (int i = 0; i < DEFAULT_FRAMES_PER_BUFFER; i++) {
-			// Hann window function
+		// Hann window function
+		if (m_hannWindowEnabled)
+		{
 			float temp = sinf(PI_FLOAT * i / (DEFAULT_FRAMES_PER_BUFFER - 1));
 			m_inBuf[i] *= temp * temp;
 		}
+
+		float sample = m_inBuf[i];
+		
+		if (sample > maxSample)
+		{
+			maxSample = sample;
+		}
+
+		if (sample < minSample)
+		{
+			minSample = sample;
+		}
+
+		mean += sample;
 	}
+
+	mean /= DEFAULT_FRAMES_PER_BUFFER;
+	
+	m_rawSamples.samples = m_inBuf;
+	m_rawSamples.max = maxSample;
+	m_rawSamples.min = minSample;
+	m_rawSamples.mean = mean;
+	m_rawSamples.samplesSize = DEFAULT_FRAMES_PER_BUFFER;
 
 	fftwf_execute(m_plan);
 
-	float maxSample = std::numeric_limits<float>::lowest();
-	float minSample = std::numeric_limits<float>::max();
+	maxSample = std::numeric_limits<float>::lowest();
+	minSample = std::numeric_limits<float>::max();
 
 	int backBufferIndex = m_lastBackBuffer;
 	m_lastBackBuffer++;

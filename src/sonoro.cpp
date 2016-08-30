@@ -9,6 +9,8 @@
 #include <bars_scene.h>
 #include <test_scene.h>
 #include <superformula_scene.h>
+#include <raw_scene.h>
+#include <beat_scene.h>
 
 #define SMOOTHING_STEP 0.01f
 
@@ -87,7 +89,9 @@ int Sonoro::run()
 		new BarsScene(*this),
 		new LineScene(*this),
 		new TestScene(*this),
-		new SuperformulaScene(*this)
+		new SuperformulaScene(*this),
+		new RawScene(*this),
+		new BeatScene(*this)
 	};
 	// =========================================
 

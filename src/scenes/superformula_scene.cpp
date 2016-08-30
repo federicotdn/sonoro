@@ -3,11 +3,13 @@
 #include <math_utils.h>
 
 #define ROTATION_STEP -0.001f;
-#define TRANSITION_DURATION_MS 2500
+#define TRANSITION_DURATION_MS 4000
 #define WAIT_DURATION_MS 500
 
-#define MEAN_DELTA_TOLERANCE 0.09f
-#define RADIUS_MULTIPLIER 600.0f
+#define MEAN_DELTA_TOLERANCE 0.1f
+#define RADIUS_MULTIPLIER 500.0f
+#define MIN_VISIBLE_RADIUS 1.0f
+#define MAX_VISIBLE_RADIUS 1000.0f
 
 using namespace so;
 
@@ -17,9 +19,9 @@ SuperformulaScene::SuperformulaScene(Sonoro & app) :
 	m_msCounter(TRANSITION_DURATION_MS + 1),
 	m_inTransition(false),
 	m_prevMean(0),
-	m_prevDeviation(0),
 	m_lastEval{0},
-	m_meanTolerance(MEAN_DELTA_TOLERANCE)
+	m_meanTolerance(MEAN_DELTA_TOLERANCE),
+	m_lastMeans{0}
 {
 	// m: rotational symmetry
 	// n1, n2, n3: form
@@ -50,36 +52,27 @@ void SuperformulaScene::update()
 
 	float w = (float)m_app.getRenderContext().getWindowWidth();
 	float h = (float)m_app.getRenderContext().getWindowHeight();
-	float *samples = m_app.getAudioContext().getProcessedSamples();
 
 	float xOffset = w / 2;
 	float yOffset = h / 2;
 
-	float max = std::numeric_limits<float>::lowest();
-	float min = std::numeric_limits<float>::max();
-	float mean = 0;
-	float deviation = 0;
+	AudioContext::Samples &rawSamples = m_app.getAudioContext().getRawSamples();
+	float mean = (rawSamples.mean - rawSamples.min) / (rawSamples.max - rawSamples.min);
+	float histMean = 0;
 
-	for (int i = 0; i < AC_OUT_SIZE; i++)
+	for (int i = 1; i < MEAN_HIST_SIZE; i++)
 	{
-		if (samples[i] > max)
-		{
-			max = samples[i];
-		}
-
-		if (samples[i] < min)
-		{
-			min = samples[i];
-		}
-
-		mean += samples[i];
+		m_lastMeans[i - 1] = m_lastMeans[i];
+		histMean += m_lastMeans[i];
 	}
 
-	mean /= AC_OUT_SIZE;
+	m_lastMeans[MEAN_HIST_SIZE - 1] = mean;
+	histMean /= MEAN_HIST_SIZE;
 
-	if (fabs(mean - m_prevMean) < m_meanTolerance)
+	bool spike = false;
+	if (fabs(mean - histMean) > m_meanTolerance)
 	{
-		mean = m_prevMean;
+		spike = true;
 	}
 	else
 	{
@@ -97,27 +90,31 @@ void SuperformulaScene::update()
 		m_currentRotation += 2 * PI_FLOAT;
 	}
 
-	for (int i = 0; i < AC_OUT_SIZE; i++)
-	{
-		deviation += (samples[i] - mean) * (samples[i] - mean);
-	}
-
-	deviation = sqrtf(deviation / (AC_OUT_SIZE - 1));
-	m_prevDeviation = deviation;
+	float radiusMean = 0;
 
 	for (int i = 0; i < POINT_COUNT; i++)
 	{
 		float pctg = (float)i / (POINT_COUNT - 1);
 		float angle = pctg * 2 * PI_FLOAT;
 		float result = superformula(angle);
-		float r = ((result + m_lastEval[i]) / 2) * ((mean + m_prevMean) / 2) * RADIUS_MULTIPLIER;
+		float r = ((result + m_lastEval[i]) / 2) * histMean * RADIUS_MULTIPLIER;
+		r *= spike ? 1.2f : 1.0f;
 		m_lastEval[i] = result;
 
+		radiusMean += r;
 		float x = r * cosf(angle + m_currentRotation) + xOffset;
 		float y = r * sinf(angle + m_currentRotation) + yOffset;
 
 		m_points[i].x = (int)x;
 		m_points[i].y = (int)y;
+	}
+
+	radiusMean /= POINT_COUNT;
+
+	if (!m_inTransition && (radiusMean < MIN_VISIBLE_RADIUS || radiusMean > MAX_VISIBLE_RADIUS))
+	{
+		// Force a transition
+		m_msCounter = WAIT_DURATION_MS + 1;
 	}
 
 	m_points[0].x = m_points[POINT_COUNT - 1].x;
@@ -170,9 +167,9 @@ void SuperformulaScene::updateParams()
 		m_nextParams.a = -10 + MathUtils::rand() * 30;
 		m_nextParams.b = -10 + MathUtils::rand() * 30;
 		m_nextParams.m = -10 + MathUtils::rand() * 2000;
-		m_nextParams.n1 = -3 + MathUtils::rand() * 10;
-		m_nextParams.n2 = -3 + MathUtils::rand() * 11;
-		m_nextParams.n3 = -3 + MathUtils::rand() * 11;
+		m_nextParams.n1 = -3 + MathUtils::rand() * 8;
+		m_nextParams.n2 = -3 + MathUtils::rand() * 10;
+		m_nextParams.n3 = -3 + MathUtils::rand() * 10;
 		m_nextParams.red = MathUtils::rand();
 		m_nextParams.grn = MathUtils::rand();
 		m_nextParams.blu = MathUtils::rand();

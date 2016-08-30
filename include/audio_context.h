@@ -28,6 +28,20 @@ namespace so
 	class AudioContext
 	{
 	public:
+		struct Samples
+		{
+			Samples() :
+				samplesSize(0),
+				samples(nullptr),
+				min(0), max(0), mean(0)
+			{ }
+
+			int samplesSize;
+			float *samples;
+			float min, max;
+			float mean;
+		};
+
 		AudioContext();
 		~AudioContext();
 
@@ -39,7 +53,7 @@ namespace so
 		int stopStream();
 		void processSamples();
 		float *getProcessedSamples() { return m_processedSamples; }
-		float *getRawSamples() { return m_inBuf; }
+		Samples &getRawSamples() { return m_rawSamples; }
 		float *getSampleFrequencies() { return m_sampleFrequencies; }
 		
 		void addSmoothing(float val);
@@ -72,6 +86,9 @@ namespace so
 		fftwf_complex *m_outBuf;
 		float m_processedSamples[AC_OUT_SIZE];
 		float m_sampleFrequencies[AC_RAW_OUT_SIZE];
+
+		/* Packaged Samples data */
+		Samples m_rawSamples;
 
 		int m_lastBackBuffer;
 		fftwf_complex m_backBuffers[DEFAULT_BACK_BUFFER_COUNT][AC_OUT_SIZE];

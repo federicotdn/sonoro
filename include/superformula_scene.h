@@ -2,6 +2,7 @@
 #define SUPERFORMULA_H
 
 #define POINT_COUNT 500
+#define MEAN_HIST_SIZE 50
 
 #include <scene.h>
 
@@ -30,6 +31,7 @@ namespace so
 
 		SDL_Point m_points[POINT_COUNT];
 		float m_lastEval[POINT_COUNT];
+		float m_lastMeans[MEAN_HIST_SIZE];
 		SuperformulaParams m_params;
 		SuperformulaParams m_lastParams;
 		SuperformulaParams m_nextParams;
@@ -37,7 +39,6 @@ namespace so
 		bool m_inTransition;
 		Uint32 m_msCounter;
 		float m_prevMean;
-		float m_prevDeviation;
 		float m_meanTolerance;
 	};
 }

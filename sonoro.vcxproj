@@ -127,8 +127,10 @@
     <ClCompile Include="src\render\text_renderer.cpp" />
     <ClCompile Include="src\render\world_object.cpp" />
     <ClCompile Include="src\scenes\bars_scene.cpp" />
+    <ClCompile Include="src\scenes\beat_scene.cpp" />
     <ClCompile Include="src\scenes\line_scene.cpp" />
     <ClCompile Include="src\scenes\menu.cpp" />
+    <ClCompile Include="src\scenes\raw_scene.cpp" />
     <ClCompile Include="src\scenes\superformula_scene.cpp" />
     <ClCompile Include="src\scenes\test_scene.cpp" />
     <ClCompile Include="src\sonoro.cpp" />
@@ -142,6 +144,7 @@
     <ClInclude Include="include\audio_context.h" />
     <ClInclude Include="include\a_weighting.h" />
     <ClInclude Include="include\bars_scene.h" />
+    <ClInclude Include="include\beat_scene.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\input_context.h" />
@@ -150,6 +153,7 @@
     <ClInclude Include="include\menu.h" />
     <ClInclude Include="include\model.h" />
     <ClInclude Include="include\program.h" />
+    <ClInclude Include="include\raw_scene.h" />
     <ClInclude Include="include\render_context.h" />
     <ClInclude Include="include\scene.h" />
     <ClInclude Include="include\superformula_scene.h" />
