@@ -83,7 +83,7 @@ void SuperformulaScene::update()
 	bool beat = m_app.getAudioContext().onBeat();
 	if (beat)
 	{
-		m_currentRotation += PI_FLOAT / 5;
+		m_currentRotation += PI_FLOAT / 8;
 	}
 	m_currentRotation += ROTATION_STEP;
 	
@@ -98,7 +98,7 @@ void SuperformulaScene::update()
 	}
 
 	m_spikeLen += -SPIKE_STEP + (beat ? SPIKE_JUMP : 0);
-	m_spikeLen = MathUtils::clamp<int>(MIN_SPIKE_LEN, MAX_SPIKE_LEN, (int)m_spikeLen);
+	m_spikeLen = (float)MathUtils::clamp<int>(MIN_SPIKE_LEN, MAX_SPIKE_LEN, (int)m_spikeLen);
 
 	float radiusMean = 0;
 
@@ -193,12 +193,12 @@ void SuperformulaScene::updateParams()
 		else if (genNextTransition)
 		{
 			m_lastParams[i] = m_params[i];
-			m_nextParams[i].a = -10 + MathUtils::rand() * 30;
-			m_nextParams[i].b = -10 + MathUtils::rand() * 30;
+			m_nextParams[i].a = -10 + MathUtils::rand() * 50;
+			m_nextParams[i].b = -10 + MathUtils::rand() * 50;
 			m_nextParams[i].m = -10 + MathUtils::rand() * 2000;
-			m_nextParams[i].n1 = -3 + MathUtils::rand() * 8;
-			m_nextParams[i].n2 = -3 + MathUtils::rand() * 10;
-			m_nextParams[i].n3 = -3 + MathUtils::rand() * 10;
+			m_nextParams[i].n1 = -3 + MathUtils::rand() * 10;
+			m_nextParams[i].n2 = -3 + MathUtils::rand() * 15;
+			m_nextParams[i].n3 = -3 + MathUtils::rand() * 15;
 			m_nextParams[i].red = MathUtils::rand();
 			m_nextParams[i].grn = MathUtils::rand();
 			m_nextParams[i].blu = MathUtils::rand();

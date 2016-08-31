@@ -102,8 +102,8 @@ namespace so
 		uint32_t m_msBeatCooldown;
 		bool m_onBeat;
 		float m_energyHistBuffer[ENERGY_HIST_SIZE];
-		float m_msBetweenBeats;
-		float m_msLastBeat;
+		uint32_t m_msBetweenBeats;
+		uint32_t m_msLastBeat;
 		CircularArray<float> m_energyHist;
 		unsigned int m_beatCount;
 

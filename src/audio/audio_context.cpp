@@ -4,7 +4,7 @@
 #include <math.h>
 #include <limits>
 
-#define MAX_BPM 150.0f
+#define MAX_BPM 160.0f
 #define MIN_MS_BETWEEN_BEATS (60000.0f / MAX_BPM)
 
 using namespace so;
@@ -24,11 +24,11 @@ AudioContext::AudioContext() :
 	m_aWeightingEnabled(true),
 	m_rawSamples(),
 	m_onBeat(false),
-	m_msBeatCooldown(MIN_MS_BETWEEN_BEATS + 1),
+	m_msBeatCooldown((uint32_t)MIN_MS_BETWEEN_BEATS + 1),
 	m_energyHistBuffer{0},
 	m_energyHist(m_energyHistBuffer, ENERGY_HIST_SIZE),
-	m_msBetweenBeats(MIN_MS_BETWEEN_BEATS),
-	m_msLastBeat(MIN_MS_BETWEEN_BEATS),
+	m_msBetweenBeats((uint32_t)MIN_MS_BETWEEN_BEATS),
+	m_msLastBeat((uint32_t)MIN_MS_BETWEEN_BEATS),
 	m_beatCount(0)
 {
 	initializeSampleStructs();
