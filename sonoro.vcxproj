@@ -146,6 +146,7 @@
     <ClInclude Include="include\bars_scene.h" />
     <ClInclude Include="include\beat_scene.h" />
     <ClInclude Include="include\camera.h" />
+    <ClInclude Include="include\circular_array.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\input_context.h" />
     <ClInclude Include="include\line_scene.h" />

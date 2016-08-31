@@ -8,12 +8,15 @@
 #include <fftw3.h>
 
 #include <constants.h>
+#include <circular_array.h>
 
 #define DEFAULT_CHAN_COUNT 1
 #define DEFAULT_FRAMES_PER_BUFFER 512
 #define DEFAULT_SAMPLE_RATE 44100
 #define DEFAULT_SMOOTHING 0.95f
 #define DEFAULT_BACK_BUFFER_COUNT 35
+
+#define ENERGY_HIST_SIZE 90 // Used by BPM Processing
 
 #define AC_RAW_OUT_SIZE ((DEFAULT_FRAMES_PER_BUFFER / 2) + 1)
 // Skip first value of m_outBuf
@@ -51,7 +54,7 @@ namespace so
 		int setInputDevice(int index);
 		int startStream();
 		int stopStream();
-		void processSamples();
+		void processSamples(uint32_t deltaMs);
 		float *getProcessedSamples() { return m_processedSamples; }
 		Samples &getRawSamples() { return m_rawSamples; }
 		float *getSampleFrequencies() { return m_sampleFrequencies; }
@@ -63,10 +66,9 @@ namespace so
 		void setAWeightingEnabled(bool enabled);
 		bool getAWeightingEnabled() { return m_aWeightingEnabled; }
 
-		void updateBeat(uint32_t msElapsed, bool beatMarked);
-		bool onBeat();
+		bool onBeat() { return m_onBeat; }
 		int getBPM();
-		bool isSettingBPM();
+		unsigned int getBeatCount() { return m_beatCount; }
 
 		std::string deviceName(int index);
 		std::vector<int> inputDeviceList();
@@ -75,16 +77,10 @@ namespace so
 	private:
 		float sampleToDb(fftwf_complex c);
 		void initializeSampleStructs();
+		void updateBPM(uint32_t deltaMs);
 
 		bool m_initialized;
 		std::string m_error;
-
-		uint32_t m_msLastBeat;
-		uint32_t m_msBetweenBeats;
-		uint32_t m_msBeatSetTimeoutCounter;
-		uint32_t m_msBeatSetPeriod;
-		bool m_onBeat;
-		int m_beatCount;
 
 		/* PortAudio */
 		PaStream *m_instream;
@@ -92,18 +88,27 @@ namespace so
 		bool m_hannWindowEnabled;
 		bool m_aWeightingEnabled;
 
-		/* FFTW */
+		/* FFTW and Samples Processing */
 		fftwf_plan m_plan;
 		float *m_inBuf;
 		fftwf_complex *m_outBuf;
 		float m_processedSamples[AC_OUT_SIZE];
 		float m_sampleFrequencies[AC_RAW_OUT_SIZE];
+		int m_lastBackBuffer;
+		fftwf_complex m_backBuffers[DEFAULT_BACK_BUFFER_COUNT][AC_OUT_SIZE];
+
+		/* BPM Processing */
+
+		uint32_t m_msBeatCooldown;
+		bool m_onBeat;
+		float m_energyHistBuffer[ENERGY_HIST_SIZE];
+		float m_msBetweenBeats;
+		float m_msLastBeat;
+		CircularArray<float> m_energyHist;
+		unsigned int m_beatCount;
 
 		/* Packaged Samples data */
 		Samples m_rawSamples;
-
-		int m_lastBackBuffer;
-		fftwf_complex m_backBuffers[DEFAULT_BACK_BUFFER_COUNT][AC_OUT_SIZE];
 	};
 }
 

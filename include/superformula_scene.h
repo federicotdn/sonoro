@@ -4,6 +4,8 @@
 #define POINT_COUNT 500
 #define MEAN_HIST_SIZE 10
 
+#define SHAPE_COUNT 5
+
 #include <scene.h>
 
 namespace so
@@ -13,8 +15,12 @@ namespace so
 	public:
 		struct SuperformulaParams
 		{
+			SDL_Point m_points[POINT_COUNT];
+			float m_lastEval[POINT_COUNT];
 			float a, b, m, n1, n2, n3;
 			float red, grn, blu;
+			float rotDirection;
+			float radiusMultiplier;
 		};
 
 		SuperformulaScene(Sonoro &app);
@@ -27,19 +33,16 @@ namespace so
 		std::string sceneName() override { return "Superformula Scene"; }
 	private:
 		void updateParams();
-		float superformula(float angle);
+		float superformula(SuperformulaParams &params, float angle);
 
-		SDL_Point m_points[POINT_COUNT];
-		float m_lastEval[POINT_COUNT];
 		float m_lastMeans[MEAN_HIST_SIZE];
-		SuperformulaParams m_params;
-		SuperformulaParams m_lastParams;
-		SuperformulaParams m_nextParams;
+		SuperformulaParams m_params[SHAPE_COUNT];
+		SuperformulaParams m_lastParams[SHAPE_COUNT];
+		SuperformulaParams m_nextParams[SHAPE_COUNT];
 		float m_currentRotation;
 		bool m_inTransition;
 		Uint32 m_msCounter;
 		float m_prevMean;
-		float m_meanTolerance;
 		float m_spikeLen;
 	};
 }

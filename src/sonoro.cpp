@@ -131,9 +131,6 @@ int Sonoro::run()
 
 		checkGlobalActions();
 
-		// Process audio
-		m_audioContext.processSamples();
-
 		// Update FPS and delta ms
 		Uint32 currentTicks = SDL_GetTicks();
 		Uint32 difference = currentTicks - lastTicks;
@@ -142,11 +139,11 @@ int Sonoro::run()
 		{
 			fps = 1000 / (difference != 0 ? difference : 1);
 		}
-		
-		bool marked = m_inputContext.actionActivated(SonoroAction::MARK_BEAT);
 
 		m_renderContext.setDeltaMs(difference);
-		m_audioContext.updateBeat(difference, marked);
+
+		// Process audio
+		m_audioContext.processSamples(difference);
 
 		// Update
 		
@@ -236,9 +233,8 @@ void Sonoro::updateHud(int fps, std::string sceneName)
 	m_info.clear();
 
 	int bpm = m_audioContext.getBPM();
-	std::string bpmModified = m_audioContext.isSettingBPM() ? " (!)" : "";
 
-	m_info.appendln("FPS: " + std::to_string(fps) + " BPM: " + std::to_string(bpm) + bpmModified);
+	m_info.appendln("FPS: " + std::to_string(fps) + " BPM: ~" + std::to_string(bpm));
 	m_info.appendln("Smoothing: " + std::to_string(m_audioContext.getSmoothing()));
 	m_info.append("Hann Window: " + std::to_string(m_audioContext.getHannWindowEnabled()));
 	m_info.appendln(", A Weighting: " + std::to_string(m_audioContext.getAWeightingEnabled()));

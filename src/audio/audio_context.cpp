@@ -4,8 +4,8 @@
 #include <math.h>
 #include <limits>
 
-#define MIN_BPM 50.0f
-#define BPM_SET_TIMEOUT 3000.0f
+#define MAX_BPM 150.0f
+#define MIN_MS_BETWEEN_BEATS (60000.0f / MAX_BPM)
 
 using namespace so;
 
@@ -23,12 +23,13 @@ AudioContext::AudioContext() :
 	m_hannWindowEnabled(true),
 	m_aWeightingEnabled(true),
 	m_rawSamples(),
-	m_msLastBeat(0),
 	m_onBeat(false),
-	m_beatCount(0),
-	m_msBetweenBeats(1000 * (60.0f / MIN_BPM)),
-	m_msBeatSetPeriod(0),
-	m_msBeatSetTimeoutCounter(BPM_SET_TIMEOUT + 1)
+	m_msBeatCooldown(MIN_MS_BETWEEN_BEATS + 1),
+	m_energyHistBuffer{0},
+	m_energyHist(m_energyHistBuffer, ENERGY_HIST_SIZE),
+	m_msBetweenBeats(MIN_MS_BETWEEN_BEATS),
+	m_msLastBeat(MIN_MS_BETWEEN_BEATS),
+	m_beatCount(0)
 {
 	initializeSampleStructs();
 }
@@ -213,7 +214,7 @@ int AudioContext::stopStream()
 	return 0;
 }
 
-void AudioContext::processSamples()
+void AudioContext::processSamples(uint32_t deltaMs)
 {
 	if (!m_initialized || m_instream == nullptr || Pa_IsStreamActive(m_instream) == 0)
 	{
@@ -269,6 +270,8 @@ void AudioContext::processSamples()
 	m_rawSamples.min = minSample;
 	m_rawSamples.mean = mean;
 	m_rawSamples.samplesSize = DEFAULT_FRAMES_PER_BUFFER;
+
+	updateBPM(deltaMs);
 
 	fftwf_execute(m_plan);
 
@@ -390,6 +393,51 @@ void AudioContext::addSmoothing(float val)
 	}
 }
 
+void AudioContext::updateBPM(uint32_t deltaMs)
+{
+	m_onBeat = false;
+	m_msLastBeat += deltaMs;
+
+	float meanEnergy = 0;
+	for (int i = 0; i < m_energyHist.getCount(); i++)
+	{
+		meanEnergy += m_energyHist.m_buffer[i];
+	}
+	meanEnergy /= m_energyHist.getCount();
+
+	float variance = 0;
+	for (int i = 0; i < m_energyHist.getCount(); i++)
+	{
+		float tmp = m_energyHist.m_buffer[i] - meanEnergy;
+		variance += tmp * tmp;
+	}
+	variance /= m_energyHist.getCount();
+
+	float instantEnergy = 0;
+	for (int i = 0; i < DEFAULT_FRAMES_PER_BUFFER; i++)
+	{
+		instantEnergy += (m_inBuf[i]) * (m_inBuf[i]);
+	}
+	instantEnergy /= DEFAULT_FRAMES_PER_BUFFER;
+
+	m_energyHist.addValue(instantEnergy);
+
+	float C = (-0.0025714f * variance) + 1.51142857f;
+
+	bool beat = (instantEnergy > C * meanEnergy);
+
+	m_msBeatCooldown += deltaMs;
+	if (m_msBeatCooldown > MIN_MS_BETWEEN_BEATS && beat)
+	{
+		m_onBeat = true;
+		m_beatCount++;
+		m_msBeatCooldown = 0;
+		
+		m_msBetweenBeats = (m_msBetweenBeats + m_msLastBeat) / 2;
+		m_msLastBeat = 0;
+	}
+}
+
 void AudioContext::setHannWindowEnabled(bool enabled)
 {
 	m_hannWindowEnabled = enabled;
@@ -400,61 +448,10 @@ void AudioContext::setAWeightingEnabled(bool enabled)
 	m_aWeightingEnabled = enabled;
 }
 
-void AudioContext::updateBeat(uint32_t msElapsed, bool beatMarked)
-{
-	m_onBeat = false;
-
-	if (m_msBeatSetTimeoutCounter < BPM_SET_TIMEOUT)
-	{
-		m_msBeatSetTimeoutCounter += msElapsed;
-		m_msBeatSetPeriod += msElapsed;
-	}
-
-	if (!beatMarked)
-	{
-		m_msLastBeat += msElapsed;
-		if (m_msLastBeat > m_msBetweenBeats)
-		{
-			m_onBeat = true;
-			m_msLastBeat = 0;
-		}
-	}
-	else
-	{
-		m_onBeat = true;
-		m_msLastBeat = 0;
-		
-		if (m_msBeatSetTimeoutCounter > BPM_SET_TIMEOUT)
-		{
-			m_msBeatSetTimeoutCounter = 0;
-			m_beatCount = 0;
-			m_msBeatSetPeriod = 0;
-		}
-		else
-		{
-			m_msBeatSetTimeoutCounter = 0;
-			m_beatCount++;
-
-			double beatSeparation = (double)m_msBeatSetPeriod / m_beatCount;
-			m_msBetweenBeats = (uint32_t)beatSeparation;
-		}
-	}
-}
-
-bool AudioContext::onBeat()
-{
-	return m_onBeat;
-}
-
 int AudioContext::getBPM()
 {
 	double separation = 60.0 * 1000.0 / (double)m_msBetweenBeats;
 	return (int)separation;
-}
-
-bool AudioContext::isSettingBPM()
-{
-	return m_msBeatSetTimeoutCounter < BPM_SET_TIMEOUT;
 }
 
 std::string AudioContext::deviceName(int index)

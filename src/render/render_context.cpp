@@ -53,8 +53,6 @@ int RenderContext::initialize(int win_width, int win_height)
 	}
 
 	m_glContext = SDL_GL_CreateContext(m_window);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	if (m_glContext == nullptr)
 	{
@@ -63,6 +61,9 @@ int RenderContext::initialize(int win_width, int win_height)
 		SDL_Quit();
 		return -1;
 	}
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK || !GLEW_VERSION_3_2)

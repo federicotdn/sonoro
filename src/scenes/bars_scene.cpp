@@ -68,7 +68,10 @@ void BarsScene::update()
 void BarsScene::draw()
 {
 	SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+
+	uint8_t gb = m_app.getAudioContext().onBeat() ? 0 : 255;
+
+	SDL_SetRenderDrawColor(ren, 255, gb, gb, 255);
 
 	int barCount = AC_OUT_SIZE / m_barDataWidth;
 	SDL_RenderDrawRects(ren, m_rects, barCount);

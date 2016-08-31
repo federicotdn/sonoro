@@ -1,6 +1,8 @@
 #ifndef BEAT_SCENE_H
 #define BEAT_SCENE_H
 
+#define HIST_SIZE 90
+
 #include <scene.h>
 
 namespace so
