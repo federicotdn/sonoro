@@ -9,8 +9,11 @@ namespace so
 	class WorldObject
 	{
 	public:
-		WorldObject();
+		WorldObject(Model *model);
 		~WorldObject();
+
+		Model *getModel() { return m_model; }
+		void setModel(Model *model) { m_model = model; }
 
 	private:
 		glm::mat4 m_transform;

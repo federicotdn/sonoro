@@ -2,8 +2,9 @@
 
 using namespace so;
 
-WorldObject::WorldObject() :
-	m_transform()
+WorldObject::WorldObject(Model *model) :
+	m_transform(),
+	m_model(model)
 {
 }
 

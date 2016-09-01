@@ -33,6 +33,9 @@ namespace so
 		Uint32 getDeltaMs() { return m_deltaMs; }
 
 		void useProgram(Program &program);
+		void stopProgram();
+
+		void drawArrays(GLenum mode, GLint first, GLsizei count);
 
 	private:
 		SDL_Window *m_window;

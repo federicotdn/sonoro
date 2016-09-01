@@ -75,6 +75,11 @@ int RenderContext::initialize(int win_width, int win_height)
 		return -1;
 	}
 
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+
 	m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (m_renderer == nullptr)
 	{
@@ -127,4 +132,14 @@ void RenderContext::useProgram(Program &program)
 	{
 		glUseProgram(obj);
 	}
+}
+
+void RenderContext::stopProgram()
+{
+	glUseProgram(0);
+}
+
+void RenderContext::drawArrays(GLenum mode, GLint first, GLsizei count)
+{
+	glDrawArrays(mode, first, count);
 }

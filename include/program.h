@@ -23,6 +23,10 @@ namespace so
 		std::string getError() { return m_error; }
 		bool isReady() { return m_object != 0; }
 		GLuint getObject() { return m_object; }
+		
+		GLint attributeLocation(std::string name);
+		GLint uniformLocation(std::string name);
+		bool hasUniform(std::string name);
 
 	private:
 		std::vector<ShaderInfo> m_shaderList;

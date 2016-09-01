@@ -134,3 +134,26 @@ int Program::load()
 
 	return 0;
 }
+
+GLint Program::attributeLocation(std::string name)
+{
+	if (!isReady())
+	{
+		return -1;
+	}
+	return glGetAttribLocation(m_object, (const GLchar*)name.c_str());
+}
+
+GLint Program::uniformLocation(std::string name)
+{
+	if (!isReady())
+	{
+		return -1;
+	}
+	return glGetUniformLocation(m_object, (const GLchar*)name.c_str());
+}
+
+bool Program::hasUniform(std::string name)
+{
+	return uniformLocation(name) != -1;
+}

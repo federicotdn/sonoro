@@ -26,3 +26,61 @@ bool AssetLoader::readTextFile(std::string path, std::string &contents)
 	contents.append(buffer.str());
 	return true;
 }
+
+bool AssetLoader::loadOBJFile(std::string path, Asset3DModel &modelData)
+{
+	std::string contents;
+	bool ok = readTextFile(path, contents);
+	if (!ok)
+	{
+		return false;
+	}
+
+	std::vector<glm::vec3> positions;
+	std::vector<glm::vec3> normals;
+	std::vector<glm::vec3> uvs;
+
+	std::istringstream iss(contents);
+	for (std::string line; std::getline(iss, line); )
+	{
+		if (line.front() == '#' || line.empty())
+		{
+			continue;
+		}
+
+		std::istringstream lineStream(line);
+		std::string type;
+
+		lineStream >> type;
+
+		//TODO: Normals and UVs
+
+		if (type == "v")
+		{
+			float x, y, z;
+			lineStream >> x >> y >> z;
+			positions.emplace_back(x, y, z);
+		}
+		else if (type == "f")
+		{
+			std::string	s[3];
+			int indices[3];
+			int j = 0;
+
+			lineStream >> s[0] >> s[1] >> s[2];
+			for (std::string point : s)
+			{
+				std::istringstream info(point);
+				info >> indices[j++];
+			}
+
+			for (j = 0; j < 3; j++)
+			{
+				glm::vec3 pos = positions[indices[j] - 1];
+				modelData.m_vertices.push_back(pos);
+			}
+		}
+	}
+
+	return true;
+}

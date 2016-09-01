@@ -5,20 +5,12 @@
 
 using namespace so;
 
-Camera::Camera(glm::mat4 projection) :
-	m_projection(projection),
+Camera::Camera() :
+	m_projection(),
 	m_horizontalAngle(0),
 	m_verticalAngle(0),
 	m_dirty(true)
 {
-}
-
-Camera::Camera(Camera& other, glm::mat4 projection) :
-	Camera(projection)
-{
-	m_position = other.m_position;
-	m_verticalAngle = other.m_verticalAngle;
-	m_horizontalAngle = other.m_horizontalAngle;
 }
 
 Camera::~Camera()
@@ -57,6 +49,12 @@ void Camera::rotate(float horizontal, float vertical)
 		m_verticalAngle = -MAX_VERT_ANGLE;
 	}
 
+	m_dirty = true;
+}
+
+void Camera::setProjection(glm::mat4 proj)
+{
+	m_projection = proj;
 	m_dirty = true;
 }
 

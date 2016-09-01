@@ -107,7 +107,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>portaudio_x64.lib;libfftw3f-3.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>portaudio_x64.lib;libfftw3f-3.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;glew32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <ClCompile>
@@ -138,6 +138,8 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="README.md" />
+    <None Include="resources\default.frag" />
+    <None Include="resources\default.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\asset_loader.h" />

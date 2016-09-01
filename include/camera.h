@@ -9,12 +9,12 @@ namespace so
 	class Camera
 	{
 	public:
-		Camera(glm::mat4 projection);
-		Camera(Camera& other, glm::mat4 projection);
+		Camera();
 		~Camera();
 
 		void translate(glm::vec3 direction);
 		void rotate(float horizontal, float vertical);
+		void setProjection(glm::mat4 proj);
 
 		glm::mat4 getViewMatrix();
 

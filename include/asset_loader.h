@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
 namespace so
 {
@@ -23,6 +24,7 @@ namespace so
 		}
 
 		bool readTextFile(std::string path, std::string &contents);
+		bool loadOBJFile(std::string path, Asset3DModel &modelData);
 
 		~AssetLoader();
 

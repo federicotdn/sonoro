@@ -1,14 +1,18 @@
 #include <test_scene.h>
 
 #include <vector>
-#include <iostream>
+#include <iostream>	
+
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace so;
 
 TestScene::TestScene(Sonoro &app) :
 	Scene(app),
-	m_program(nullptr)
+	m_program(nullptr),
+	m_obj(nullptr)
 {
+	m_cam.setProjection(glm::perspective(glm::radians(90.0f), 16.0f / 9, 0.0f, 100.0f));
 }
 
 TestScene::~TestScene()
@@ -35,19 +39,29 @@ int TestScene::initialize()
 		return -1;
 	}
 
+	Model *model = Model::fromOBJFile("resources/cube.obj", *m_program);
+	m_obj.setModel(model);
+
 	return 0;
 }
 
 void TestScene::update()
 {
+
 }
 
 void TestScene::draw()
 {
-	if (m_program == nullptr)
-	{
-		return;
-	}
+	Model *model = m_obj.getModel();
+	Program *shader = model->m_shader;
 
-	m_app.getRenderContext().useProgram(*m_program);
+	m_app.getRenderContext().useProgram(*shader);
+
+	model->bindVao();
+
+	m_app.getRenderContext().drawArrays(model->m_drawType, model->m_drawStart, model->m_drawCount);
+
+	model->unbindVao();
+
+	m_app.getRenderContext().stopProgram();
 }
