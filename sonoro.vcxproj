@@ -68,7 +68,7 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)include\thirdparty\portaudio;$(ProjectDir)include\thirdparty\fftw3;$(ProjectDir)include;$(ProjectDir)include\thirdparty;$(ProjectDir)include\thirdparty\SDL2;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include\thirdparty\portaudio;$(ProjectDir)include\thirdparty\fftw3;$(ProjectDir)include;$(ProjectDir)include\thirdparty;$(ProjectDir)include\thirdparty\GLFW;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)lib\win-x64;$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
@@ -107,7 +107,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>portaudio_x64.lib;libfftw3f-3.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;glew32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>portaudio_x64.lib;libfftw3f-3.lib;glfw3dll.lib;glew32.lib;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
     </Link>
     <ClCompile>
@@ -124,7 +124,6 @@
     <ClCompile Include="src\render\model.cpp" />
     <ClCompile Include="src\render\program.cpp" />
     <ClCompile Include="src\render\render_context.cpp" />
-    <ClCompile Include="src\render\text_renderer.cpp" />
     <ClCompile Include="src\render\world_object.cpp" />
     <ClCompile Include="src\scenes\bars_scene.cpp" />
     <ClCompile Include="src\scenes\beat_scene.cpp" />
@@ -159,9 +158,9 @@
     <ClInclude Include="include\raw_scene.h" />
     <ClInclude Include="include\render_context.h" />
     <ClInclude Include="include\scene.h" />
+    <ClInclude Include="include\shapes.h" />
     <ClInclude Include="include\superformula_scene.h" />
     <ClInclude Include="include\test_scene.h" />
-    <ClInclude Include="include\text_renderer.h" />
     <ClInclude Include="include\sonoro.h" />
     <ClInclude Include="include\world_object.h" />
   </ItemGroup>

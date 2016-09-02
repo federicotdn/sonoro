@@ -7,6 +7,7 @@
 #define SHAPE_COUNT 5
 
 #include <scene.h>
+#include <shapes.h>
 
 namespace so
 {
@@ -15,7 +16,7 @@ namespace so
 	public:
 		struct SuperformulaParams
 		{
-			SDL_Point m_points[POINT_COUNT];
+			Point m_points[POINT_COUNT];
 			float m_lastEval[POINT_COUNT];
 			float a, b, m, n1, n2, n3;
 			float red, grn, blu;
@@ -41,7 +42,7 @@ namespace so
 		SuperformulaParams m_nextParams[SHAPE_COUNT];
 		float m_currentRotation;
 		bool m_inTransition;
-		Uint32 m_msCounter;
+		uint32_t m_msCounter;
 		float m_prevMean;
 		float m_spikeLen;
 	};

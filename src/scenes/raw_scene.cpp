@@ -39,8 +39,8 @@ void RawScene::update()
 
 void RawScene::draw()
 {
-	SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	//SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
+	//SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 
-	SDL_RenderDrawLines(ren, m_points, AC_IN_SIZE);
+	//SDL_RenderDrawLines(ren, m_points, AC_IN_SIZE);
 }

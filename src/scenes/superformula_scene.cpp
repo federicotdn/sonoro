@@ -134,18 +134,18 @@ void SuperformulaScene::update()
 
 void SuperformulaScene::draw()
 {
-	SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
+	//SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
 
 	for (int i = 0; i < SHAPE_COUNT; i++)
 	{
 		SuperformulaParams &params = m_params[i];
 
-		Uint8 r = (Uint8)(params.red * 255);
-		Uint8 g = (Uint8)(params.grn * 255);
-		Uint8 b = (Uint8)(params.blu * 255);
+		//Uint8 r = (Uint8)(params.red * 255);
+		//Uint8 g = (Uint8)(params.grn * 255);
+		//Uint8 b = (Uint8)(params.blu * 255);
 
-		SDL_SetRenderDrawColor(ren, r, g, b, 255);
-		SDL_RenderDrawLines(ren, params.m_points, POINT_COUNT);
+		//SDL_SetRenderDrawColor(ren, r, g, b, 255);
+		//SDL_RenderDrawLines(ren, params.m_points, POINT_COUNT);
 	}
 }
 

@@ -7,7 +7,7 @@ using namespace so;
 
 BarsScene::BarsScene(Sonoro &app) :
 	Scene(app),
-	m_rects{ 0 },
+	m_rects(),
 	m_barDataWidth(DEFAULT_BAR_DATA_WIDTH),
 	m_smoothing(0.5f)
 {
@@ -68,13 +68,11 @@ void BarsScene::update()
 
 void BarsScene::draw()
 {
-	SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
-
 	uint8_t gb = m_app.getAudioContext().onBeat() ? 0 : 255;
 
-	SDL_SetRenderDrawColor(ren, 255, gb, gb, 255);
+	//SDL_SetRenderDrawColor(ren, 255, gb, gb, 255);
 
 	int barCount = AC_OUT_SIZE / m_barDataWidth;
-	SDL_RenderDrawRects(ren, m_rects, barCount);
+	//SDL_RenderDrawRects(ren, m_rects, barCount);
 }
 

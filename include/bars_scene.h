@@ -2,6 +2,7 @@
 #define BARS_SCENE_H
 
 #include <scene.h>
+#include <shapes.h>
 
 #define DEFAULT_BAR_DATA_WIDTH 2
 
@@ -21,7 +22,7 @@ namespace so
 	private:
 		int m_barDataWidth;
 		float m_smoothing;
-		SDL_Rect m_rects[AC_OUT_SIZE];
+		Rect m_rects[AC_OUT_SIZE];
 	};
 }
 

@@ -2,6 +2,7 @@
 #define LINE_SCENE_H
 
 #include <scene.h>
+#include <shapes.h>
 
 namespace so
 {
@@ -17,7 +18,7 @@ namespace so
 		std::string sceneName() override { return "Line Scene"; }
 	
 	private:
-		SDL_Point m_points[AC_OUT_SIZE];
+		Point m_points[AC_OUT_SIZE];
 	};
 }
 

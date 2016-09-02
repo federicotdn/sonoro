@@ -1,7 +1,6 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#include <SDL2/SDL.h>
 #include <map>
 
 namespace so
@@ -29,7 +28,7 @@ namespace so
 	};
 
 	struct KbBinding {
-		int sdlCode;
+		int glfwCode;
 		SonoroAction action;
 	};
 

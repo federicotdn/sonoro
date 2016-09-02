@@ -34,45 +34,10 @@ int Sonoro::initialize()
 {
 	int h = m_renderContext.getWindowHeight();
 
-	if (m_info.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE * 25))
-	{
-		std::cerr << "Error initializing Visualizer info panel." << std::endl;
-		return -1;
-	}
-
-	if (m_help.initialize(DEFAULT_FONT, DEFAULT_FONT_SIZE, DEFAULT_FONT_SIZE * 35))
-	{
-		std::cerr << "Error initializing Visualizer help panel." << std::endl;
-		return -1;
-	}
-
-	m_info.appendln("Visualizer ready.  Choose an input [1-9]:");
-	m_info.appendln("");
-	m_info.setPosition(0, h);
-	m_info.setBackgroundColor({ 0, 100, 10 });
-
-	setupHelpPanel();
-
 	srand((unsigned int)time(nullptr));
 
 	m_initialized = true;
 	return 0;
-}
-
-void Sonoro::setupHelpPanel()
-{
-	m_help.appendln("======= SONORO HELP =======");
-	m_help.appendln(" - Press SPACE to switch to the next scene.");
-	m_help.appendln(" - Press C to switch to the previous scene.");
-	m_help.appendln(" - F1 toggles the info HUD.");
-	m_help.appendln(" - Use 'o' and 'p' to increase/decrease smoothing factor.");
-	m_help.appendln(" - 'a' toggles A Weighting.");
-	m_help.appendln(" - 'w' toggles Hann Window function usage.");
-	m_help.appendln(" - 'h' toggles the Help dialogue.");
-	m_help.appendln(" - 'f' toggles fullscreen mode.");
-	m_help.appendln(" - Use the Menu scene to select the audio input device.");
-	m_help.appendln(" - Press ESC to quit.");
-	m_help.setBackgroundColor({ 115, 0, 105 });
 }
 
 int Sonoro::run()
@@ -83,8 +48,7 @@ int Sonoro::run()
 		return -1;
 	}
 
-	SDL_Renderer *ren = m_renderContext.getRenderer();
-	Uint32 lastTicks = SDL_GetTicks();
+	//Uint32 lastTicks = SDL_GetTicks();
 
 	// ============ ADD SCENES HERE ============
 	std::vector<Scene*> initialScenes =
@@ -135,18 +99,18 @@ int Sonoro::run()
 		checkGlobalActions();
 
 		// Update FPS and delta ms
-		Uint32 currentTicks = SDL_GetTicks();
-		Uint32 difference = currentTicks - lastTicks;
-		lastTicks = currentTicks;
+		//Uint32 currentTicks = SDL_GetTicks();
+		//Uint32 difference = currentTicks - lastTicks;
+		//lastTicks = currentTicks;
 		if (loopTicks % 10 == 0)
 		{
-			fps = 1000 / (difference != 0 ? difference : 1);
+			//fps = 1000 / (difference != 0 ? difference : 1);
 		}
 
-		m_renderContext.setDeltaMs(difference);
+		//m_renderContext.setDeltaMs(difference);
 
 		// Process audio
-		m_audioContext.processSamples(difference);
+		//m_audioContext.processSamples(difference);
 
 		// Update
 		
@@ -193,33 +157,21 @@ int Sonoro::run()
 
 		// Draw
 
-		SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-		SDL_RenderClear(ren);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		if (!skipSceneDraw)
 		{
 			currentScene->draw();
 		}
 
-		if (showHud)
-		{
-			updateHud(fps, currentScene->sceneName());
-			SDL_Texture *infoTex = m_info.getTexture(m_renderContext);
-			SDL_RenderCopy(ren, infoTex, NULL, m_info.getRect());
-		}
+		GLFWwindow *win = m_renderContext.getWindow();
 
-		if (showHelp)
-		{
-			SDL_Texture *helpTex = m_help.getTexture(m_renderContext);
-			SDL_Rect *helpRect = m_help.getRect();
-			int x = (m_renderContext.getWindowWidth() - helpRect->w) / 2;
-			int y = (m_renderContext.getWindowHeight() - helpRect->h) / 2;
-			m_help.setPosition(x, y);
-			SDL_RenderCopy(ren, helpTex, NULL, helpRect);
-		}
+		glfwSwapBuffers(win);
+		glfwPollEvents();
 
-		SDL_RenderPresent(ren);
 		loopTicks++;
+		
+		done = glfwWindowShouldClose(win) == 0 ? false : true;
 	}
 
 	// Delete scenes
@@ -229,20 +181,6 @@ int Sonoro::run()
 	}
 
 	return 0;
-}
-
-void Sonoro::updateHud(int fps, std::string sceneName)
-{
-	m_info.clear();
-
-	int bpm = m_audioContext.getBPM();
-
-	m_info.appendln("FPS: " + std::to_string(fps) + " BPM: ~" + std::to_string(bpm));
-	m_info.appendln("Smoothing: " + std::to_string(m_audioContext.getSmoothing()));
-	m_info.append("Hann Window: " + std::to_string(m_audioContext.getHannWindowEnabled()));
-	m_info.appendln(", A Weighting: " + std::to_string(m_audioContext.getAWeightingEnabled()));
-	m_info.appendln("Current scene: " + sceneName + " (press h for Help)");
-	m_info.setPosition(0, m_renderContext.getWindowHeight() - m_info.getRect()->h);
 }
 
 void Sonoro::checkGlobalActions()

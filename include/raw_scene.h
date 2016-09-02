@@ -2,6 +2,7 @@
 #define RAW_SCENE_H
 
 #include <scene.h>
+#include <shapes.h>
 
 namespace so
 {
@@ -18,7 +19,7 @@ namespace so
 		std::string sceneName() override { return "Raw Samples Scene"; }
 
 	private:
-		SDL_Point m_points[AC_IN_SIZE];
+		Point m_points[AC_IN_SIZE];
 	};
 }
 

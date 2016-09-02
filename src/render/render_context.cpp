@@ -5,11 +5,8 @@ using namespace so;
 
 RenderContext::RenderContext() :
 	m_window(nullptr),
-	m_renderer(nullptr),
-	m_glContext(nullptr),
 	m_initialized(false),
 	m_fullscreen(false),
-	m_glRenderTex(nullptr),
 	m_activeProgram(0),
 	m_deltaMs(0)
 {
@@ -22,12 +19,8 @@ RenderContext::~RenderContext()
 		return;
 	}
 
-	TTF_Quit();
-	SDL_DestroyTexture(m_glRenderTex);
-	SDL_DestroyRenderer(m_renderer);
-	SDL_GL_DeleteContext(m_glContext);
-	SDL_DestroyWindow(m_window);
-	SDL_Quit();
+	glfwDestroyWindow(m_window);
+	glfwTerminate();
 }
 
 int RenderContext::initialize(int win_width, int win_height)
@@ -38,42 +31,30 @@ int RenderContext::initialize(int win_width, int win_height)
 		return -1;
 	}
 
-	/* Initialize SDL */
-
-	if (SDL_Init(SDL_INIT_EVERYTHING))
+	if (!glfwInit())
 	{
-		m_error = "Unable to initialize SDL.";
+		m_error = "Unable to initialize GLFW.";
 		return -1;
 	}
 
-	m_window = SDL_CreateWindow(APPLICATION_NAME, 100, 100, win_width, win_height, SDL_WINDOW_OPENGL);
-	if (m_window == nullptr)
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+	m_window = glfwCreateWindow(win_width, win_height, APPLICATION_NAME, nullptr, nullptr);
+	if (!m_window)
 	{
-		m_error = "Unable to create SDL window.";
-		SDL_Quit();
-		return -1;
+		m_error = "Unable to create GLFW window.";
+		glfwTerminate();
 	}
 
-	m_glContext = SDL_GL_CreateContext(m_window);
-
-	if (m_glContext == nullptr)
-	{
-		m_error = "Unable to create GL context.";
-		SDL_DestroyWindow(m_window);
-		SDL_Quit();
-		return -1;
-	}
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	glfwMakeContextCurrent(m_window);
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK || !GLEW_VERSION_3_2)
 	{
 		m_error = "Unable to initialize GLEW.";
-		SDL_GL_DeleteContext(m_glContext);
-		SDL_DestroyWindow(m_window);
-		SDL_Quit();
 		return -1;
 	}
 
@@ -82,63 +63,23 @@ int RenderContext::initialize(int win_width, int win_height)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	if (m_renderer == nullptr)
-	{
-		m_error = "Unable to create SDL renderer.";
-		SDL_GL_DeleteContext(m_glContext);
-		SDL_DestroyWindow(m_window);
-		SDL_Quit();
-		return -1;
-	}
-
-	int w = getWindowWidth();
-	int h = getWindowHeight();
-
-	m_glRenderTex = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
-	if (m_glRenderTex == nullptr)
-	{
-		m_error = "Unable to create GL Target Render texture.";
-		SDL_DestroyRenderer(m_renderer);
-		SDL_GL_DeleteContext(m_glContext);
-		SDL_DestroyWindow(m_window);
-		SDL_Quit();
-		return -1;
-	}
-
-	/* Initialize SDL_TTF */
-	if (TTF_Init())
-	{
-		m_error = "Unable to initialize SDL_TTF";
-		SDL_DestroyTexture(m_glRenderTex);
-		SDL_DestroyRenderer(m_renderer);
-		SDL_GL_DeleteContext(m_glContext);
-		SDL_DestroyWindow(m_window);
-		SDL_Quit();
-		return -1;
-	}
-
 	m_initialized = true;
 	return 0;
 }
 
 int RenderContext::getWindowHeight()
 {
-	int h;
-	SDL_GetWindowSize(m_window, nullptr, &h);
-	return h;
+	return 800;
 }
 
 int RenderContext::getWindowWidth()
 {
-	int w;
-	SDL_GetWindowSize(m_window, &w, nullptr);
-	return w;
+	return 600;
 }
 
 void RenderContext::setFullscreen(bool enabled)
 {
-	SDL_SetWindowFullscreen(m_window, enabled ? SDL_WINDOW_FULLSCREEN : 0);
+	//SDL_SetWindowFullscreen(m_window, enabled ? SDL_WINDOW_FULLSCREEN : 0);
 	m_fullscreen = enabled;
 }
 

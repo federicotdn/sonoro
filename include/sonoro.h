@@ -6,7 +6,6 @@
 #include <render_context.h>
 #include <audio_context.h>
 #include <input_context.h>
-#include <text_renderer.h>
 #include <constants.h>
 
 namespace so
@@ -26,15 +25,11 @@ namespace so
 
 	private:
 		void checkGlobalActions();
-		void setupHelpPanel();
-		void updateHud(int fps, std::string sceneName);
 
 		RenderContext &m_renderContext;
 		AudioContext &m_audioContext;
 		InputContext &m_inputContext;
 
-		TextRenderer m_info;
-		TextRenderer m_help;
 		bool m_initialized;
 	};
 }

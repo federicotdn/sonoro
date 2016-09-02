@@ -4,7 +4,7 @@ using namespace so;
 
 LineScene::LineScene(Sonoro &app) :
 	Scene(app),
-	m_points{0}
+	m_points()
 {
 }
 
@@ -34,9 +34,9 @@ void LineScene::update()
 
 void LineScene::draw()
 {
-	SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
-	SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+	//SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
+	//SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
 	
-	SDL_RenderDrawLines(ren, m_points, AC_OUT_SIZE);
+	//SDL_RenderDrawLines(ren, m_points, AC_OUT_SIZE);
 }
 

@@ -61,16 +61,7 @@ void TestScene::draw()
 
 	model->bindVao();
 
-	SDL_Texture *glRenderTex = m_app.getRenderContext().getGLRenderTexture();
-	int status = SDL_GL_BindTexture(glRenderTex, nullptr, nullptr);
-	if (status)
-	{
-		std::cerr << "glbindtexture failed" << std::endl;
-	}
-
 	m_app.getRenderContext().drawArrays(model->m_drawType, model->m_drawStart, model->m_drawCount);
-
-	SDL_GL_UnbindTexture(glRenderTex);
 
 	model->unbindVao();
 

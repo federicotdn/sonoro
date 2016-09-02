@@ -4,10 +4,7 @@
 #include <string>
 
 #include <GL/glew.h>
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
-#include <SDL2/SDL_ttf.h>
+#include <GLFW/glfw3.h>
 
 #include <program.h>
 
@@ -22,32 +19,27 @@ namespace so
 		int initialize(int win_width, int win_height);
 		std::string getError() { return m_error; }
 		
-		SDL_Renderer *getRenderer() { return m_renderer; }
-		
+		GLFWwindow *getWindow() { return m_window; }
 		int getWindowHeight();
 		int getWindowWidth();
 		void setFullscreen(bool enabled);
 		bool getFullscreen() { return m_fullscreen; }
 
-		void setDeltaMs(Uint32 ms) { m_deltaMs = ms; }
-		Uint32 getDeltaMs() { return m_deltaMs; }
+		void setDeltaMs(uint32_t ms) { m_deltaMs = ms; }
+		uint32_t getDeltaMs() { return m_deltaMs; }
 
-		SDL_Texture *getGLRenderTexture() { return m_glRenderTex; }
 		void useProgram(Program &program);
 		void stopProgram();
 
 		void drawArrays(GLenum mode, GLint first, GLsizei count);
 
 	private:
-		SDL_Window *m_window;
-		SDL_Renderer *m_renderer;
-		SDL_GLContext m_glContext;
-		SDL_Texture *m_glRenderTex;
+		GLFWwindow *m_window;
 		std::string m_error;
 		bool m_initialized;
 		bool m_fullscreen;
 		GLuint m_activeProgram;
-		Uint32 m_deltaMs;
+		uint32_t m_deltaMs;
 	};
 }
 
