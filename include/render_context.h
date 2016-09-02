@@ -32,6 +32,7 @@ namespace so
 		void setDeltaMs(Uint32 ms) { m_deltaMs = ms; }
 		Uint32 getDeltaMs() { return m_deltaMs; }
 
+		SDL_Texture *getGLRenderTexture() { return m_glRenderTex; }
 		void useProgram(Program &program);
 		void stopProgram();
 
@@ -41,6 +42,7 @@ namespace so
 		SDL_Window *m_window;
 		SDL_Renderer *m_renderer;
 		SDL_GLContext m_glContext;
+		SDL_Texture *m_glRenderTex;
 		std::string m_error;
 		bool m_initialized;
 		bool m_fullscreen;

@@ -9,6 +9,7 @@ RenderContext::RenderContext() :
 	m_glContext(nullptr),
 	m_initialized(false),
 	m_fullscreen(false),
+	m_glRenderTex(nullptr),
 	m_activeProgram(0),
 	m_deltaMs(0)
 {
@@ -22,6 +23,7 @@ RenderContext::~RenderContext()
 	}
 
 	TTF_Quit();
+	SDL_DestroyTexture(m_glRenderTex);
 	SDL_DestroyRenderer(m_renderer);
 	SDL_GL_DeleteContext(m_glContext);
 	SDL_DestroyWindow(m_window);
@@ -90,10 +92,25 @@ int RenderContext::initialize(int win_width, int win_height)
 		return -1;
 	}
 
+	int w = getWindowWidth();
+	int h = getWindowHeight();
+
+	m_glRenderTex = SDL_CreateTexture(m_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, w, h);
+	if (m_glRenderTex == nullptr)
+	{
+		m_error = "Unable to create GL Target Render texture.";
+		SDL_DestroyRenderer(m_renderer);
+		SDL_GL_DeleteContext(m_glContext);
+		SDL_DestroyWindow(m_window);
+		SDL_Quit();
+		return -1;
+	}
+
 	/* Initialize SDL_TTF */
 	if (TTF_Init())
 	{
 		m_error = "Unable to initialize SDL_TTF";
+		SDL_DestroyTexture(m_glRenderTex);
 		SDL_DestroyRenderer(m_renderer);
 		SDL_GL_DeleteContext(m_glContext);
 		SDL_DestroyWindow(m_window);
