@@ -24,6 +24,7 @@ namespace so
 		int getWindowWidth();
 		void setFullscreen(bool enabled);
 		bool getFullscreen() { return m_fullscreen; }
+		std::string getGLInfoString();
 
 		void setDeltaMs(uint32_t ms) { m_deltaMs = ms; }
 		uint32_t getDeltaMs() { return m_deltaMs; }

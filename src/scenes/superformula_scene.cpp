@@ -2,6 +2,8 @@
 #include <iostream>
 #include <math_utils.h>
 
+#include <math.h>
+
 #define ROTATION_STEP -0.001f
 #define TRANSITION_DURATION_MS 2000
 #define WAIT_DURATION_MS 1500

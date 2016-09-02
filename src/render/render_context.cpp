@@ -1,6 +1,8 @@
 #include <render_context.h>
 #include <constants.h>
 
+#include <sstream>
+
 using namespace so;
 
 RenderContext::RenderContext() :
@@ -37,10 +39,10 @@ int RenderContext::initialize(int win_width, int win_height)
 		return -1;
 	}
 
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	m_window = glfwCreateWindow(win_width, win_height, APPLICATION_NAME, nullptr, nullptr);
 	if (!m_window)
@@ -52,9 +54,11 @@ int RenderContext::initialize(int win_width, int win_height)
 	glfwMakeContextCurrent(m_window);
 
 	glewExperimental = true;
-	if (glewInit() != GLEW_OK || !GLEW_VERSION_3_2)
+	int status = glewInit();
+	if (status != GLEW_OK || !GLEW_VERSION_3_2)
 	{
-		m_error = "Unable to initialize GLEW.";
+		const char *er = reinterpret_cast<const char*>(glewGetErrorString(status));
+		m_error = "Unable to initialize GLEW: " + std::string(er);
 		return -1;
 	}
 
@@ -65,6 +69,16 @@ int RenderContext::initialize(int win_width, int win_height)
 
 	m_initialized = true;
 	return 0;
+}
+
+std::string RenderContext::getGLInfoString()
+{
+	std::ostringstream os;
+    os << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
+    os << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << "\n";
+    os << "Vendor: " << glGetString(GL_VENDOR) << "\n";
+    os << "Renderer: " << glGetString(GL_RENDERER) << "\n";
+    return os.str();
 }
 
 int RenderContext::getWindowHeight()

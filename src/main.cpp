@@ -15,12 +15,21 @@ int main(int, char**)
 		std::cerr << "Error intializing render context: " << renderContext.getError() << std::endl;
 		return EXIT_FAILURE;
 	}
+	else
+	{
+		std::cout << "Initialized Render Context. Info:" << std::endl;
+		std::cout << renderContext.getGLInfoString();
+	}
 
 	so::AudioContext audioContext;
 	if (audioContext.initialize())
 	{
 		std::cerr << "Error initializing audio context: " << audioContext.getError() << std::endl;
 		return EXIT_FAILURE;
+	}
+	else
+	{
+		std::cout << "Initialized Audio Context." << std::endl;
 	}
 
 	so::InputContext inputContext;
@@ -30,6 +39,10 @@ int main(int, char**)
 	{
 		std::cerr << "Unable to initialize visualizer.  Exiting." << std::endl;
 		return EXIT_FAILURE;
+	}
+	else
+	{
+		std::cout << "Initialized Sonoro." << std::endl;
 	}
 
 	int ret = app.run();

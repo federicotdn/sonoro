@@ -1,6 +1,8 @@
 #include <menu.h>
 #include <math_utils.h>
 
+#include <math.h>
+
 using namespace so;
 
 Menu::Menu(Sonoro &app) :

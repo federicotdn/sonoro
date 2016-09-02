@@ -171,7 +171,7 @@ int Sonoro::run()
 
 		loopTicks++;
 		
-		done = glfwWindowShouldClose(win) == 0 ? false : true;
+		done |= glfwWindowShouldClose(win) == 0 ? false : true;
 	}
 
 	// Delete scenes
