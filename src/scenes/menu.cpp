@@ -73,7 +73,9 @@ void Menu::updateCircle(bool initial)
 {
 	float w = (float)m_app.getRenderContext().getWindowWidth();
 	float h = (float)m_app.getRenderContext().getWindowHeight();
-	float *samples = m_app.getAudioContext().getProcessedSamples();
+
+	AudioContext::Values &freqs = m_app.getAudioContext().getFrequencyAmplitudes();
+	float *samples = freqs.values;
 	float baseRadius = 90.0f;
 	float diffRadius = 70.0f;
 
@@ -82,7 +84,7 @@ void Menu::updateCircle(bool initial)
 
 	for (int i = 0; i < AC_OUT_SIZE; i++)
 	{
-		float r = baseRadius + diffRadius * samples[i];
+		float r = baseRadius + diffRadius * ((samples[i] - freqs.min) / (freqs.max - freqs.min));
 		float pctg = (float)i / (AC_OUT_SIZE - 1);
 		float x = r * cosf(2 * PI_FLOAT * pctg) + xOffset;
 		float y = r * sinf(2 * PI_FLOAT * pctg) + yOffset;

@@ -21,7 +21,7 @@ void RawScene::update()
 	float w = (float)m_app.getRenderContext().getWindowWidth();
 	float h = (float)m_app.getRenderContext().getWindowHeight();
 	
-	AudioContext::Samples &samples = m_app.getAudioContext().getRawSamples();
+	AudioContext::Values &samples = m_app.getAudioContext().getRawSamples();
 
 	float multiplier = 400.0f;
 
@@ -29,7 +29,7 @@ void RawScene::update()
 	{
 		float x = ((float)i / (AC_IN_SIZE - 1)) * w;
 
-		float normalizedSample = (samples.samples[i] - samples.min) / (samples.max - samples.min);
+		float normalizedSample = (samples.values[i] - samples.min) / (samples.max - samples.min);
 
 		float y = (h / 2) + (normalizedSample * multiplier) - (multiplier / 2);
 		m_points[i].x = (int)x;

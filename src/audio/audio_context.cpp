@@ -60,9 +60,13 @@ AudioContext::~AudioContext()
 
 void AudioContext::initializeSampleStructs()
 {
-	m_rawSamples.samples = m_inBuf;
+	m_rawSamples.values = m_inBuf;
 	m_rawSamples.max = m_rawSamples.min = m_rawSamples.mean = 0;
-	m_rawSamples.samplesSize = AC_IN_SIZE;
+	m_rawSamples.size = AC_IN_SIZE;
+
+	m_frequencyAmplitudes.values = m_processedSamples;
+	m_frequencyAmplitudes.max = m_frequencyAmplitudes.min = m_frequencyAmplitudes.mean = 0;
+	m_frequencyAmplitudes.size = AC_OUT_SIZE;
 }
 
 int AudioContext::initialize()
@@ -265,11 +269,9 @@ void AudioContext::processSamples(uint32_t deltaMs)
 
 	mean /= DEFAULT_FRAMES_PER_BUFFER;
 	
-	m_rawSamples.samples = m_inBuf;
 	m_rawSamples.max = maxSample;
 	m_rawSamples.min = minSample;
 	m_rawSamples.mean = mean;
-	m_rawSamples.samplesSize = DEFAULT_FRAMES_PER_BUFFER;
 
 	updateBPM(deltaMs);
 
@@ -277,6 +279,7 @@ void AudioContext::processSamples(uint32_t deltaMs)
 
 	maxSample = std::numeric_limits<float>::lowest();
 	minSample = std::numeric_limits<float>::max();
+	mean = 0;
 
 	int backBufferIndex = m_lastBackBuffer;
 	m_lastBackBuffer++;
@@ -355,18 +358,26 @@ void AudioContext::processSamples(uint32_t deltaMs)
 		{
 			minSample = m_processedSamples[outputIndex];
 		}
+
+		mean += m_processedSamples[outputIndex];
 	}
 
-	for (int i = 0; i < AC_OUT_SIZE; i++)
-	{
-		m_processedSamples[i] -= minSample;
-		float denominator = maxSample - minSample;
-		if (denominator == 0)
-		{
-			denominator = 1;
-		}
-		m_processedSamples[i] /= denominator;
-	}
+	mean /= AC_OUT_SIZE;
+
+	m_frequencyAmplitudes.max = maxSample;
+	m_frequencyAmplitudes.min = minSample;
+	m_frequencyAmplitudes.mean = mean;
+
+	//for (int i = 0; i < AC_OUT_SIZE; i++)
+	//{
+	//	m_processedSamples[i] -= minSample;
+	//	float denominator = maxSample - minSample;
+	//	if (denominator == 0)
+	//	{
+	//		denominator = 1;
+	//	}
+	//	m_processedSamples[i] /= denominator;
+	//}
 }
 
 float AudioContext::sampleToDb(fftwf_complex c)

@@ -44,7 +44,7 @@ Model *Model::fromOBJFile(std::string path, Program &shader, bool useStatic)
 	glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 	
 	GLenum usage = useStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
-	glBufferData(GL_ARRAY_BUFFER, modelInfo.m_vertices.size() * sizeof(glm::vec3), &(modelInfo.m_vertices[0]), usage);
+	glBufferData(GL_ARRAY_BUFFER, modelInfo.vertices.size() * sizeof(glm::vec3), &(modelInfo.vertices[0]), usage);
 	glEnableVertexAttribArray(vertexLocation);
 	glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 	
@@ -57,7 +57,7 @@ Model *Model::fromOBJFile(std::string path, Program &shader, bool useStatic)
 	glBindVertexArray(0);
 
 	model->m_drawType = GL_TRIANGLES;
-	model->m_drawCount = (GLint)modelInfo.m_vertices.size();
+	model->m_drawCount = (GLint)modelInfo.vertices.size();
 	model->m_drawStart = 0;
 
 	return model;

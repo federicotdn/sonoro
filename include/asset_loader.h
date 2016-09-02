@@ -9,9 +9,9 @@
 namespace so
 {
 	struct Asset3DModel {
-		std::vector<glm::vec3> m_vertices;
-		std::vector<glm::vec3> m_normals;
-		std::vector<glm::vec2> m_uvs;
+		std::vector<glm::vec3> vertices;
+		std::vector<glm::vec3> normals;
+		std::vector<glm::vec2> uvs;
 	};
 
 	class AssetLoader

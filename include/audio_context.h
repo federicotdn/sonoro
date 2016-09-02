@@ -16,7 +16,7 @@
 #define DEFAULT_SMOOTHING 0.95f
 #define DEFAULT_BACK_BUFFER_COUNT 35
 
-#define ENERGY_HIST_SIZE 90 // Used by BPM Processing
+#define ENERGY_HIST_SIZE 172 // Used by BPM Processing
 
 #define AC_RAW_OUT_SIZE ((DEFAULT_FRAMES_PER_BUFFER / 2) + 1)
 // Skip first value of m_outBuf
@@ -31,16 +31,16 @@ namespace so
 	class AudioContext
 	{
 	public:
-		struct Samples
+		struct Values
 		{
-			Samples() :
-				samplesSize(0),
-				samples(nullptr),
+			Values() :
+				size(0),
+				values(nullptr),
 				min(0), max(0), mean(0)
 			{ }
 
-			int samplesSize;
-			float *samples;
+			int size;
+			float *values;
 			float min, max;
 			float mean;
 		};
@@ -55,8 +55,8 @@ namespace so
 		int startStream();
 		int stopStream();
 		void processSamples(uint32_t deltaMs);
-		float *getProcessedSamples() { return m_processedSamples; }
-		Samples &getRawSamples() { return m_rawSamples; }
+		Values &getFrequencyAmplitudes() { return m_frequencyAmplitudes; }
+		Values &getRawSamples() { return m_rawSamples; }
 		float *getSampleFrequencies() { return m_sampleFrequencies; }
 		
 		void addSmoothing(float val);
@@ -108,7 +108,8 @@ namespace so
 		unsigned int m_beatCount;
 
 		/* Packaged Samples data */
-		Samples m_rawSamples;
+		Values m_rawSamples;
+		Values m_frequencyAmplitudes;
 	};
 }
 

@@ -67,7 +67,7 @@ void SuperformulaScene::update()
 	float xOffset = w / 2;
 	float yOffset = h / 2;
 
-	AudioContext::Samples &rawSamples = m_app.getAudioContext().getRawSamples();
+	AudioContext::Values &rawSamples = m_app.getAudioContext().getRawSamples();
 	float mean = (rawSamples.mean - rawSamples.min) / (rawSamples.max - rawSamples.min);
 	float histMean = 0;
 

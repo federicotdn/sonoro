@@ -43,7 +43,7 @@ void BarsScene::update()
 	float w = (float)m_app.getRenderContext().getWindowWidth();
 	float h = (float)m_app.getRenderContext().getWindowHeight();
 
-	float *samples = m_app.getAudioContext().getProcessedSamples();
+	AudioContext::Values freqs = m_app.getAudioContext().getFrequencyAmplitudes();
 
 	int barCount = AC_OUT_SIZE / m_barDataWidth;
 
@@ -53,7 +53,8 @@ void BarsScene::update()
 		float val = 0;
 		for (int j = 0; j < m_barDataWidth; j++)
 		{
-			val += samples[(m_barDataWidth * i) + j];
+			float amplitude = freqs.values[(m_barDataWidth * i) + j];
+			val += (amplitude - freqs.min) / (freqs.max - freqs.min);
 		}
 		val /= m_barDataWidth;
 		

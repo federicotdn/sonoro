@@ -77,7 +77,7 @@ bool AssetLoader::loadOBJFile(std::string path, Asset3DModel &modelData)
 			for (j = 0; j < 3; j++)
 			{
 				glm::vec3 pos = positions[indices[j] - 1];
-				modelData.m_vertices.push_back(pos);
+				modelData.vertices.push_back(pos);
 			}
 		}
 	}
