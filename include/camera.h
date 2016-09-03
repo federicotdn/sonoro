@@ -16,6 +16,10 @@ namespace so
 		void rotate(float horizontal, float vertical);
 		void setProjection(glm::mat4 proj);
 
+		glm::vec3 getUpVector();
+		glm::vec3 getForwardVector();
+		glm::vec3 getRightVector();
+
 		glm::mat4 getViewMatrix();
 
 	private:

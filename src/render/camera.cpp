@@ -9,7 +9,8 @@ Camera::Camera() :
 	m_projection(),
 	m_horizontalAngle(0),
 	m_verticalAngle(0),
-	m_dirty(true)
+	m_dirty(true),
+	m_position()
 {
 }
 
@@ -56,6 +57,24 @@ void Camera::setProjection(glm::mat4 proj)
 {
 	m_projection = proj;
 	m_dirty = true;
+}
+
+glm::vec3 Camera::getUpVector()
+{
+	glm::vec4 up = glm::inverse(getOrientationMatrix()) * glm::vec4(0.0f, 0.1f, 0.0f, 1.0f);
+	return glm::vec3(up);
+}
+
+glm::vec3 Camera::getForwardVector()
+{
+	glm::vec4 forward = glm::inverse(getOrientationMatrix()) * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+	return glm::vec3(forward);
+}
+
+glm::vec3 Camera::getRightVector()
+{
+	glm::vec4 forward = glm::inverse(getOrientationMatrix()) * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+	return glm::vec3(forward);
 }
 
 glm::mat4 Camera::getOrientationMatrix()

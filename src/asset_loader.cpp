@@ -70,6 +70,12 @@ bool AssetLoader::loadOBJFile(std::string path, Asset3DModel &modelData)
 			lineStream >> s[0] >> s[1] >> s[2];
 			for (std::string point : s)
 			{
+				// variable point is one of the following:
+				// v1
+				// v1/vt1
+				// v1/vt1/vn1
+				// v1//vn1
+
 				std::istringstream info(point);
 				info >> indices[j++];
 			}

@@ -52,6 +52,9 @@ int RenderContext::initialize(int win_width, int win_height)
 	}
 
 	glfwMakeContextCurrent(m_window);
+	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GLFW_TRUE);
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPos(m_window, 0, 0);
 
 	glewExperimental = true;
 	int status = glewInit();

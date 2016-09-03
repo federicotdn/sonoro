@@ -1,6 +1,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#include <render_context.h>
 #include <map>
 
 namespace so
@@ -35,19 +36,22 @@ namespace so
 	class InputContext
 	{
 	public:
-		InputContext();
+		InputContext(RenderContext &renderContext);
 		~InputContext();
 
 		void pollInputs();
 		
 		bool actionActivated(SonoroAction action);
-		bool sdlKeyActivated(int sdlCode);
+		bool actionHeld(SonoroAction action);
 
 	private:
 		void pollKeyboard();
 
+		RenderContext &m_renderContext;
 		KeyboardMap m_keyboard;
+		KeyboardMap m_heldKeyboard;
 		std::map<SonoroAction, int> m_keyboardBindings;
+		std::map<int, int> m_lastKeyStates;
 	};
 }
 

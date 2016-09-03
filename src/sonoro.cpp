@@ -53,10 +53,10 @@ int Sonoro::run()
 	// ============ ADD SCENES HERE ============
 	std::vector<Scene*> initialScenes =
 	{
+		new TestScene(*this),
 		new Menu(*this),
 		new BarsScene(*this),
 		new LineScene(*this),
-		new TestScene(*this),
 		new SuperformulaScene(*this),
 		new RawScene(*this),
 		new BeatScene(*this)
@@ -153,6 +153,11 @@ int Sonoro::run()
 		else
 		{
 			currentScene->update();
+		}
+
+		if (skipSceneDraw)
+		{
+			std::cout << "Switching to scene: " << scenes[currentSceneIndex]->sceneName() << std::endl;
 		}
 
 		// Draw

@@ -32,7 +32,7 @@ int main(int, char**)
 		std::cout << "Initialized Audio Context." << std::endl;
 	}
 
-	so::InputContext inputContext;
+	so::InputContext inputContext(renderContext);
 
 	so::Sonoro app(renderContext, audioContext, inputContext);
 	if (app.initialize())

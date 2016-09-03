@@ -1,5 +1,6 @@
-#include <program.h>
+#include <glm/gtc/type_ptr.hpp>
 
+#include <program.h>
 #include <asset_loader.h>
 
 using namespace so;
@@ -156,4 +157,13 @@ GLint Program::uniformLocation(std::string name)
 bool Program::hasUniform(std::string name)
 {
 	return uniformLocation(name) != -1;
+}
+
+void Program::setUniformMatrix4fv(std::string name, const glm::mat4 &mat)
+{
+	GLint location = uniformLocation(name);
+	if (location != -1)
+	{
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+	}
 }

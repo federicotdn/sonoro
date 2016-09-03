@@ -2,6 +2,7 @@
 #define PROGRAM_H
 
 #include <GL/glew.h>
+#include <glm/mat4x4.hpp>
 
 #include <vector>
 #include <string>
@@ -27,6 +28,8 @@ namespace so
 		GLint attributeLocation(std::string name);
 		GLint uniformLocation(std::string name);
 		bool hasUniform(std::string name);
+
+		void setUniformMatrix4fv(std::string name, const glm::mat4 &mat);
 
 	private:
 		std::vector<ShaderInfo> m_shaderList;

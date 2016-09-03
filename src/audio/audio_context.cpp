@@ -31,7 +31,6 @@ AudioContext::AudioContext() :
 	m_msLastBeat((uint32_t)MIN_MS_BETWEEN_BEATS),
 	m_beatCount(0)
 {
-	initializeSampleStructs();
 }
 
 AudioContext::~AudioContext()
@@ -130,6 +129,7 @@ int AudioContext::initialize()
 		return -1;
 	}
 
+	initializeSampleStructs();
 	m_initialized = true;
 	return 0;
 }

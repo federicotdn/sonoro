@@ -12,7 +12,8 @@ TestScene::TestScene(Sonoro &app) :
 	m_program(nullptr),
 	m_obj(nullptr)
 {
-	m_cam.setProjection(glm::perspective(glm::radians(90.0f), 16.0f / 9, 0.0f, 100.0f));
+	//m_cam.setProjection(glm::perspective(glm::radians(90.0f), 4.0f / 4, 0.0f, 100.0f));
+	m_cam.setProjection(glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -5.0f, 50.0f));
 }
 
 TestScene::~TestScene()
@@ -47,10 +48,34 @@ int TestScene::initialize()
 
 void TestScene::update()
 {
+	InputContext &i = m_app.getInputContext();
+	if (i.actionHeld(SonoroAction::UP))
+	{
+		m_cam.translate(m_cam.getForwardVector() * 0.1f);
+	}
+	else if (i.actionHeld(SonoroAction::DOWN))
+	{
+		m_cam.translate(-m_cam.getForwardVector() * 0.1f);
+	}
+	
+	if (i.actionHeld(SonoroAction::RIGHT))
+	{
+		m_cam.translate(m_cam.getRightVector() * 0.1f);
+	}
+	else if (i.actionHeld(SonoroAction::LEFT))
+	{
+		m_cam.translate(-m_cam.getRightVector() * 0.1f);
+	}
 
+	const float mouseSensitivity = 0.1;
+	double mouseX, mouseY;
+
+	glfwGetCursorPos(m_app.getRenderContext().getWindow(), &mouseX, &mouseY);
+
+	m_cam.rotate(mouseSensitivity * mouseY, mouseSensitivity * mouseX);
+
+	glfwSetCursorPos(m_app.getRenderContext().getWindow(), 0, 0);
 }
-
-#include <iostream>
 
 void TestScene::draw()
 {
@@ -60,6 +85,8 @@ void TestScene::draw()
 	m_app.getRenderContext().useProgram(*shader);
 
 	model->bindVao();
+
+	shader->setUniformMatrix4fv("u_camera", m_cam.getViewMatrix());
 
 	m_app.getRenderContext().drawArrays(model->m_drawType, model->m_drawStart, model->m_drawCount);
 
