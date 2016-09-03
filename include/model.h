@@ -9,10 +9,13 @@ namespace so
 	class Model
 	{
 	public:
-		static Model *fromOBJFile(std::string path, Program &shader, bool useStatic = true);
+		static Model *fromOBJFile(std::string path, Program &program, bool useStatic = true);
+		static Model *emptyModel(Program &program, size_t capacity, bool useStatic = true);
 		~Model();
 		
-		Program *m_shader;
+		void bufferVertexData(const void *data, size_t size);
+
+		Program *m_program;
 		GLuint m_vao;
 		GLenum m_drawType;
 		GLint m_drawCount;
@@ -24,7 +27,7 @@ namespace so
 
 	private:
 		Model() :
-			m_shader(nullptr),
+			m_program(nullptr),
 			m_vao(0),
 			m_drawType(GL_TRIANGLES),
 			m_drawCount(0),

@@ -167,3 +167,12 @@ void Program::setUniformMatrix4fv(std::string name, const glm::mat4 &mat)
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 	}
 }
+
+void Program::setUniform4fv(std::string name, const glm::vec4 &vec)
+{
+	GLint location = uniformLocation(name);
+	if (location != -1)
+	{
+		glUniform4fv(location, 1, glm::value_ptr(vec));
+	}
+}

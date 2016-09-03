@@ -60,11 +60,13 @@ AudioContext::~AudioContext()
 void AudioContext::initializeSampleStructs()
 {
 	m_rawSamples.values = m_inBuf;
-	m_rawSamples.max = m_rawSamples.min = m_rawSamples.mean = 0;
+	m_rawSamples.min = m_rawSamples.mean = 0;
+	m_rawSamples.max = 1;
 	m_rawSamples.size = AC_IN_SIZE;
 
 	m_frequencyAmplitudes.values = m_processedSamples;
-	m_frequencyAmplitudes.max = m_frequencyAmplitudes.min = m_frequencyAmplitudes.mean = 0;
+	m_frequencyAmplitudes.min = m_frequencyAmplitudes.mean = 0;
+	m_frequencyAmplitudes.max = 1;
 	m_frequencyAmplitudes.size = AC_OUT_SIZE;
 }
 

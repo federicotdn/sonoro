@@ -12,8 +12,10 @@ TestScene::TestScene(Sonoro &app) :
 	m_program(nullptr),
 	m_obj(nullptr)
 {
-	//m_cam.setProjection(glm::perspective(glm::radians(90.0f), 4.0f / 4, 0.0f, 100.0f));
-	m_cam.setProjection(glm::ortho(0.0f, 800.0f, 600.0f, 0.0f, -5.0f, 50.0f));
+	float w = (float)m_app.getRenderContext().getWindowWidth();
+	float h = (float)m_app.getRenderContext().getWindowHeight();
+
+	m_cam.setProjection(glm::perspective(glm::radians(60.0f), w / h, 0.0f, 100.0f));
 }
 
 TestScene::~TestScene()
@@ -46,6 +48,8 @@ int TestScene::initialize()
 	return 0;
 }
 
+#include <iostream>
+
 void TestScene::update()
 {
 	InputContext &i = m_app.getInputContext();
@@ -67,12 +71,12 @@ void TestScene::update()
 		m_cam.translate(-m_cam.getRightVector() * 0.1f);
 	}
 
-	const float mouseSensitivity = 0.1;
+	const float mouseSensitivity = 0.01f;
 	double mouseX, mouseY;
 
 	glfwGetCursorPos(m_app.getRenderContext().getWindow(), &mouseX, &mouseY);
 
-	m_cam.rotate(mouseSensitivity * mouseY, mouseSensitivity * mouseX);
+	m_cam.rotate(mouseSensitivity * (float)mouseX, mouseSensitivity * (float)mouseY);
 
 	glfwSetCursorPos(m_app.getRenderContext().getWindow(), 0, 0);
 }
@@ -80,12 +84,19 @@ void TestScene::update()
 void TestScene::draw()
 {
 	Model *model = m_obj.getModel();
-	Program *shader = model->m_shader;
+	Program *shader = model->m_program;
 
 	m_app.getRenderContext().useProgram(*shader);
 
 	model->bindVao();
 
+	float ticks = (float)m_app.getRenderContext().getTicks() / 100;
+	float r = sinf(ticks + (PI_FLOAT / 3.2f));
+	float g = sinf(ticks + (PI_FLOAT / 4.1f));
+	float b = sinf(ticks + PI_FLOAT);
+	glm::vec4 color(r, g, b, 1);
+
+	m_program->setUniform4fv("u_inColor", color);
 	shader->setUniformMatrix4fv("u_camera", m_cam.getViewMatrix());
 
 	m_app.getRenderContext().drawArrays(model->m_drawType, model->m_drawStart, model->m_drawCount);

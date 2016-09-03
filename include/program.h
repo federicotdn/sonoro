@@ -30,6 +30,7 @@ namespace so
 		bool hasUniform(std::string name);
 
 		void setUniformMatrix4fv(std::string name, const glm::mat4 &mat);
+		void setUniform4fv(std::string name, const glm::vec4 &vec);
 
 	private:
 		std::vector<ShaderInfo> m_shaderList;

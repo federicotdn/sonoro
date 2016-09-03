@@ -7,7 +7,9 @@
 #define SHAPE_COUNT 5
 
 #include <scene.h>
-#include <shapes.h>
+#include <camera.h>
+#include <model.h>
+#include <glm/vec3.hpp>
 
 namespace so
 {
@@ -16,7 +18,7 @@ namespace so
 	public:
 		struct SuperformulaParams
 		{
-			Point m_points[POINT_COUNT];
+			glm::vec3 m_points[POINT_COUNT];
 			float m_lastEval[POINT_COUNT];
 			float a, b, m, n1, n2, n3;
 			float red, grn, blu;
@@ -36,6 +38,10 @@ namespace so
 		void updateParams();
 		float superformula(SuperformulaParams &params, float angle);
 
+		Camera m_cam;
+		std::vector<Model*> m_models;
+		Program *m_program;
+
 		float m_lastMeans[MEAN_HIST_SIZE];
 		SuperformulaParams m_params[SHAPE_COUNT];
 		SuperformulaParams m_lastParams[SHAPE_COUNT];
@@ -43,7 +49,6 @@ namespace so
 		float m_currentRotation;
 		bool m_inTransition;
 		uint32_t m_msCounter;
-		float m_prevMean;
 		float m_spikeLen;
 	};
 }

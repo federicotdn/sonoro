@@ -84,14 +84,23 @@ std::string RenderContext::getGLInfoString()
     return os.str();
 }
 
+uint32_t RenderContext::getTicks()
+{
+	return (uint32_t)(glfwGetTime() * 1000);
+}
+
 int RenderContext::getWindowHeight()
 {
-	return 800;
+	int h;
+	glfwGetFramebufferSize(m_window, nullptr, &h);
+	return h;
 }
 
 int RenderContext::getWindowWidth()
 {
-	return 600;
+	int w;
+	glfwGetFramebufferSize(m_window, &w, nullptr);
+	return w;
 }
 
 void RenderContext::setFullscreen(bool enabled)

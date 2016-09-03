@@ -26,13 +26,18 @@ SuperformulaScene::SuperformulaScene(Sonoro & app) :
 	m_currentRotation(0),
 	m_msCounter(TRANSITION_DURATION_MS + 1),
 	m_inTransition(false),
-	m_prevMean(0),
 	m_lastMeans{0},
-	m_spikeLen(MIN_SPIKE_LEN)
+	m_spikeLen(MIN_SPIKE_LEN),
+	m_program(nullptr)
 {
 	// m: rotational symmetry
 	// n1, n2, n3: form
 	// a, b: expansion coefficients
+
+	int w = m_app.getRenderContext().getWindowWidth();
+	int h = m_app.getRenderContext().getWindowHeight();
+	m_cam.setFullscreenProjection(w, h);
+	//m_cam.setProjection(glm::perspective(glm::radians(60.0f), (float)w / h, 0.0f, 100.0f));
 
 	for (int i = 0; i < SHAPE_COUNT; i++)
 	{
@@ -50,10 +55,40 @@ SuperformulaScene::SuperformulaScene(Sonoro & app) :
 
 SuperformulaScene::~SuperformulaScene()
 {
+	for (Model *m : m_models)
+	{
+		delete m;
+	}
+
+	if (m_program != nullptr)
+	{
+		delete m_program;
+	}
 }
 
 int SuperformulaScene::initialize()
 {
+	std::vector<Program::ShaderInfo> shaders =
+	{
+		{ "resources/default.vert", GL_VERTEX_SHADER },
+		{ "resources/default.frag", GL_FRAGMENT_SHADER }
+	};
+
+	m_program = new Program(shaders);
+	if (m_program->load())
+	{
+		std::cerr << "TestScene: error loading shader:" << std::endl;
+		std::cerr << m_program->getError() << std::endl;
+		return -1;
+	}
+
+	for (int i = 0; i < SHAPE_COUNT; i++)
+	{
+		Model *m = Model::emptyModel(*m_program, POINT_COUNT * sizeof(glm::vec3), false);
+		m->m_drawType = GL_LINE_STRIP;
+		m_models.push_back(m);
+	}
+
 	return 0;
 }
 
@@ -102,8 +137,6 @@ void SuperformulaScene::update()
 	m_spikeLen += -SPIKE_STEP + (beat ? SPIKE_JUMP : 0);
 	m_spikeLen = (float)MathUtils::clamp<int>(MIN_SPIKE_LEN, MAX_SPIKE_LEN, (int)m_spikeLen);
 
-	float radiusMean = 0;
-
 	for (int j = 0; j < SHAPE_COUNT; j++)
 	{
 		SuperformulaParams &params = m_params[j];
@@ -114,41 +147,46 @@ void SuperformulaScene::update()
 			float angle = pctg * 2 * PI_FLOAT;
 			float result = superformula(params, angle);
 			float r = ((result + params.m_lastEval[i]) / 2) * histMean * RADIUS_MULTIPLIER;
+
 			r += m_spikeLen * params.radiusMultiplier;
 			params.m_lastEval[i] = result;
 
-			radiusMean += r;
 			float x = r * cosf(angle + m_currentRotation * params.rotDirection) + xOffset;
 			float y = r * sinf(angle + m_currentRotation * params.rotDirection) + yOffset;
 
-			params.m_points[i].x = (int)x;
-			params.m_points[i].y = (int)y;
+			params.m_points[i].x = x;
+			params.m_points[i].y = y;
 		}
-
-		radiusMean /= POINT_COUNT;
 
 		params.m_points[0].x = params.m_points[POINT_COUNT - 1].x;
 		params.m_points[0].y = params.m_points[POINT_COUNT - 1].y;
 	}
-
-	m_prevMean = mean;
 }
 
 void SuperformulaScene::draw()
 {
-	//SDL_Renderer *ren = m_app.getRenderContext().getRenderer();
+	m_app.getRenderContext().useProgram(*m_program);
 
 	for (int i = 0; i < SHAPE_COUNT; i++)
 	{
 		SuperformulaParams &params = m_params[i];
+		Model *model = m_models[i];
 
-		//Uint8 r = (Uint8)(params.red * 255);
-		//Uint8 g = (Uint8)(params.grn * 255);
-		//Uint8 b = (Uint8)(params.blu * 255);
+		model->bindVao();
 
-		//SDL_SetRenderDrawColor(ren, r, g, b, 255);
-		//SDL_RenderDrawLines(ren, params.m_points, POINT_COUNT);
+		glm::vec4 color(params.red, params.grn, params.blu, 1);
+
+		m_program->setUniformMatrix4fv("u_camera", m_cam.getViewMatrix());
+		m_program->setUniform4fv("u_inColor", color);
+
+		model->bufferVertexData(params.m_points, POINT_COUNT * sizeof(glm::vec3));
+
+		m_app.getRenderContext().drawArrays(model->m_drawType, model->m_drawStart, model->m_drawCount);
+
+		model->unbindVao();
 	}
+
+	m_app.getRenderContext().stopProgram();
 }
 
 void SuperformulaScene::updateParams()

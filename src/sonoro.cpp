@@ -32,7 +32,7 @@ Sonoro::~Sonoro()
 
 int Sonoro::initialize()
 {
-	int h = m_renderContext.getWindowHeight();
+	//int h = m_renderContext.getWindowHeight();
 
 	srand((unsigned int)time(nullptr));
 
@@ -48,18 +48,18 @@ int Sonoro::run()
 		return -1;
 	}
 
-	//Uint32 lastTicks = SDL_GetTicks();
+	uint32_t lastTicks = m_renderContext.getTicks();
 
 	// ============ ADD SCENES HERE ============
 	std::vector<Scene*> initialScenes =
 	{
 		new TestScene(*this),
-		new Menu(*this),
-		new BarsScene(*this),
-		new LineScene(*this),
+	//	new Menu(*this),
+	//	new BarsScene(*this),
+	//	new LineScene(*this),
 		new SuperformulaScene(*this),
-		new RawScene(*this),
-		new BeatScene(*this)
+	//	new RawScene(*this),
+	//	new BeatScene(*this)
 	};
 	// =========================================
 
@@ -90,6 +90,8 @@ int Sonoro::run()
 	bool showHud = true, showHelp = false;
 	int currentSceneIndex = 0, fps = 0, loopTicks = 0;
 
+	m_audioContext.setInputDevice(m_audioContext.getDefaultInputDevice()); //TODO: REMOVE
+
 	// Main loop
 	while (!done)
 	{
@@ -99,18 +101,18 @@ int Sonoro::run()
 		checkGlobalActions();
 
 		// Update FPS and delta ms
-		//Uint32 currentTicks = SDL_GetTicks();
-		//Uint32 difference = currentTicks - lastTicks;
-		//lastTicks = currentTicks;
+		uint32_t currentTicks = m_renderContext.getTicks();
+		uint32_t difference = currentTicks - lastTicks;
+		lastTicks = currentTicks;
 		if (loopTicks % 10 == 0)
 		{
-			//fps = 1000 / (difference != 0 ? difference : 1);
+			fps = 1000 / (difference != 0 ? difference : 1);
 		}
 
-		//m_renderContext.setDeltaMs(difference);
+		m_renderContext.setDeltaMs(difference);
 
 		// Process audio
-		//m_audioContext.processSamples(difference);
+		m_audioContext.processSamples(difference);
 
 		// Update
 		
@@ -162,7 +164,7 @@ int Sonoro::run()
 
 		// Draw
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		if (!skipSceneDraw)
 		{

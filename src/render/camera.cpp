@@ -1,7 +1,8 @@
 #include <camera.h>
+#include <constants.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define MAX_VERT_ANGLE 85.0f
+#define MAX_VERT_ANGLE (PI_FLOAT * 0.95f / 2)
 
 using namespace so;
 
@@ -28,14 +29,15 @@ void Camera::rotate(float horizontal, float vertical)
 {
 	m_horizontalAngle += horizontal;
 
-	while (m_horizontalAngle > 360.0f)
+	float twoPi = 2 * PI_FLOAT;
+	while (m_horizontalAngle > twoPi)
 	{
-		m_horizontalAngle -= 360.0f;
+		m_horizontalAngle -= twoPi;
 	}
 
 	while (m_horizontalAngle < 0.0f)
 	{
-		m_horizontalAngle += 360.0f;
+		m_horizontalAngle += twoPi;
 	}
 
 	m_verticalAngle += vertical;
@@ -59,6 +61,11 @@ void Camera::setProjection(glm::mat4 proj)
 	m_dirty = true;
 }
 
+void Camera::setFullscreenProjection(int w, int h)
+{
+	setProjection(glm::ortho<float>(0.0f, (float)w, (float)h, 0.0f, -1.0f, 1.0f));
+}
+
 glm::vec3 Camera::getUpVector()
 {
 	glm::vec4 up = glm::inverse(getOrientationMatrix()) * glm::vec4(0.0f, 0.1f, 0.0f, 1.0f);
@@ -73,7 +80,7 @@ glm::vec3 Camera::getForwardVector()
 
 glm::vec3 Camera::getRightVector()
 {
-	glm::vec4 forward = glm::inverse(getOrientationMatrix()) * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f);
+	glm::vec4 forward = glm::inverse(getOrientationMatrix()) * glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 	return glm::vec3(forward);
 }
 

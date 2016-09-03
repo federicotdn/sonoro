@@ -15,6 +15,7 @@ namespace so
 		void translate(glm::vec3 direction);
 		void rotate(float horizontal, float vertical);
 		void setProjection(glm::mat4 proj);
+		void setFullscreenProjection(int w, int h);
 
 		glm::vec3 getUpVector();
 		glm::vec3 getForwardVector();

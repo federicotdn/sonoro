@@ -5,14 +5,17 @@ namespace so
 {
 	/* Replace SDL_Rect and SDL_Point */
 
+	//TODO: Delet this
+
 	struct Point
 	{
 		Point() : 
 			x(0), 
-			y(0)
+			y(0),
+			z(0)
 		{}
 
-		int x, y;
+		int x, y, z;
 	};
 
 	struct Rect

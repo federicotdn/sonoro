@@ -7,11 +7,11 @@
 
 using namespace so;
 
-Model *Model::fromOBJFile(std::string path, Program &shader, bool useStatic)
+Model *Model::fromOBJFile(std::string path, Program &program, bool useStatic)
 {
-	GLint vertexLocation = shader.attributeLocation(OBJ_VERTEX_IN_ATTRIB);
-//	GLint normalLocation = shader.attributeLocation(OBJ_NORMAL_IN_ATTRIB);
-//	GLint uvLocation = shader.attributeLocation(OBJ_UV_IN_ATTRIB);
+	GLint vertexLocation = program.attributeLocation(OBJ_VERTEX_IN_ATTRIB);
+//	GLint normalLocation = program.attributeLocation(OBJ_NORMAL_IN_ATTRIB);
+//	GLint uvLocation = program.attributeLocation(OBJ_UV_IN_ATTRIB);
 
 	if (vertexLocation == -1)
 	{
@@ -26,7 +26,7 @@ Model *Model::fromOBJFile(std::string path, Program &shader, bool useStatic)
 	}
 
 	Model *model = new Model();
-	model->m_shader = &shader;
+	model->m_program = &program;
 
 	GLuint vertexVbo;//, normalVbo, uvVbo;
 	GLuint vao;
@@ -63,6 +63,48 @@ Model *Model::fromOBJFile(std::string path, Program &shader, bool useStatic)
 	return model;
 }
 
+Model *Model::emptyModel(Program & program, size_t capacity, bool useStatic)
+{
+	GLint vertexLocation = program.attributeLocation(OBJ_VERTEX_IN_ATTRIB);
+
+	if (vertexLocation == -1)
+	{
+		return nullptr;
+	}
+
+	Model *model = new Model();
+	model->m_program = &program;
+
+	GLuint vertexVbo;
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	model->m_vao = vao;
+
+	// Load vertex positions
+
+	glGenBuffers(1, &vertexVbo);
+	model->m_vertexVbo = vertexVbo;
+	model->m_vbos.push_back(vertexVbo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
+
+	GLenum usage = useStatic ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW;
+	glBufferData(GL_ARRAY_BUFFER, capacity, nullptr, usage);
+	glEnableVertexAttribArray(vertexLocation);
+	glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	model->m_drawType = GL_TRIANGLES;
+	model->m_drawCount = (GLint)capacity;
+	model->m_drawStart = 0;
+
+	return model;
+}
+
 Model::~Model()
 {
 	glDeleteVertexArrays(1, &m_vao);
@@ -71,6 +113,13 @@ Model::~Model()
 		GLuint tmp = *it;
 		glDeleteBuffers(1, (const GLuint*)&tmp);
 	}
+}
+
+void Model::bufferVertexData(const void *data, size_t size)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
+	glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Model::bindVao()
