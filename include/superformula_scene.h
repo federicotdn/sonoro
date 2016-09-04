@@ -30,6 +30,7 @@ namespace so
 		~SuperformulaScene();
 
 		int initialize() override;
+		void activate() override;
 		void update() override;
 		void draw() override;
 
@@ -37,10 +38,14 @@ namespace so
 	private:
 		void updateParams();
 		float superformula(SuperformulaParams &params, float angle);
+		void reloadShaders();
 
 		Camera m_cam;
 		std::vector<Model*> m_models;
 		Program *m_program;
+
+		Model *m_backgroundModel;
+		Program *m_backgroundProgram;
 
 		float m_lastMeans[MEAN_HIST_SIZE];
 		SuperformulaParams m_params[SHAPE_COUNT];

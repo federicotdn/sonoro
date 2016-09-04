@@ -140,6 +140,8 @@
     <None Include="README.md" />
     <None Include="resources\default.frag" />
     <None Include="resources\default.vert" />
+    <None Include="resources\fullscreen.frag" />
+    <None Include="resources\fullscreen.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\asset_loader.h" />

@@ -83,6 +83,8 @@ void TestScene::update()
 
 void TestScene::draw()
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	Model *model = m_obj.getModel();
 	Program *shader = model->m_program;
 

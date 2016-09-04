@@ -15,6 +15,7 @@ namespace so
 		{ }
 
 		virtual int initialize() { return 0; }
+		virtual void activate() { return; }
 		virtual void update() = 0;
 		virtual void draw() = 0;
 		virtual std::string sceneName() = 0;

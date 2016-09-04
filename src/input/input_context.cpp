@@ -24,7 +24,8 @@ InputContext::InputContext(RenderContext &renderContext) :
 		{ GLFW_KEY_A, TOGGLE_AWEIGHTING },
 		{ GLFW_KEY_W, TOGGLE_HANNWINDOW },
 		{ GLFW_KEY_H, HELP },
-		{ GLFW_KEY_F, TOGGLE_FULLSCREEN }
+		{ GLFW_KEY_F, TOGGLE_FULLSCREEN },
+		{ GLFW_KEY_R, RELOAD_ASSETS }
 	};
 	// ==== End Keyboard Bindings ====
 

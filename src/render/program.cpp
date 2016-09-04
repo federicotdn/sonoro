@@ -128,6 +128,8 @@ int Program::load()
 		delete[] infoLog;
 
 		glDeleteProgram(m_object);
+
+		m_error = msg;
 		m_object = 0;
 
 		return -1;

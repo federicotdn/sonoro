@@ -25,6 +25,7 @@ namespace so
 
 		bool readTextFile(std::string path, std::string &contents);
 		bool loadOBJFile(std::string path, Asset3DModel &modelData);
+		Asset3DModel getFullscreenQuad();
 
 		~AssetLoader();
 

@@ -116,7 +116,7 @@ int Sonoro::run()
 
 		// Update
 		
-		bool skipSceneDraw = false;
+		bool sceneSwitched = false;
 		Scene *currentScene = scenes[currentSceneIndex];
 
 		if (m_inputContext.actionActivated(SonoroAction::EXIT))
@@ -136,7 +136,7 @@ int Sonoro::run()
 
 		if (m_inputContext.actionActivated(SonoroAction::NEXT_SCENE))
 		{
-			skipSceneDraw = true;
+			sceneSwitched = true;
 			currentSceneIndex++;
 			if (currentSceneIndex == scenes.size())
 			{
@@ -145,7 +145,7 @@ int Sonoro::run()
 		}
 		else if (m_inputContext.actionActivated(SonoroAction::PREV_SCENE))
 		{
-			skipSceneDraw = true;
+			sceneSwitched = true;
 			currentSceneIndex--;
 			if (currentSceneIndex == -1)
 			{
@@ -157,18 +157,19 @@ int Sonoro::run()
 			currentScene->update();
 		}
 
-		if (skipSceneDraw)
+		if (sceneSwitched)
 		{
+			scenes[currentSceneIndex]->activate();
 			std::cout << "Switching to scene: " << scenes[currentSceneIndex]->sceneName() << std::endl;
 		}
 
-		// Draw
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		if (!skipSceneDraw)
+		if (!sceneSwitched)
 		{
 			currentScene->draw();
+		}
+		else
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
 		GLFWwindow *win = m_renderContext.getWindow();

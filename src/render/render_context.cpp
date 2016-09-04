@@ -68,6 +68,8 @@ int RenderContext::initialize(int win_width, int win_height)
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glClearColor(0, 0, 0, 1);
 	glDepthFunc(GL_LEQUAL);
 
 	m_initialized = true;

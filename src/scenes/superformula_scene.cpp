@@ -1,7 +1,8 @@
 #include <superformula_scene.h>
-#include <iostream>
+#include <asset_loader.h>
 #include <math_utils.h>
 
+#include <iostream>
 #include <math.h>
 
 #define ROTATION_STEP -0.001f
@@ -28,7 +29,9 @@ SuperformulaScene::SuperformulaScene(Sonoro & app) :
 	m_inTransition(false),
 	m_lastMeans{0},
 	m_spikeLen(MIN_SPIKE_LEN),
-	m_program(nullptr)
+	m_program(nullptr),
+	m_backgroundModel(nullptr),
+	m_backgroundProgram(nullptr)
 {
 	// m: rotational symmetry
 	// n1, n2, n3: form
@@ -64,6 +67,16 @@ SuperformulaScene::~SuperformulaScene()
 	{
 		delete m_program;
 	}
+
+	if (m_backgroundModel != nullptr)
+	{
+		delete m_backgroundModel;
+	}
+
+	if (m_backgroundProgram != nullptr)
+	{
+		delete m_backgroundProgram;
+	}
 }
 
 int SuperformulaScene::initialize()
@@ -82,6 +95,20 @@ int SuperformulaScene::initialize()
 		return -1;
 	}
 
+	std::vector<Program::ShaderInfo> backgroundShaders =
+	{
+		{ "resources/fullscreen.vert", GL_VERTEX_SHADER },
+		{ "resources/fullscreen.frag", GL_FRAGMENT_SHADER }
+	};
+
+	m_backgroundProgram = new Program(backgroundShaders);
+	if (m_backgroundProgram->load())
+	{
+		std::cerr << "TestScene: error loading background shader:" << std::endl;
+		std::cerr << m_backgroundProgram->getError() << std::endl;
+		return -1;
+	}
+
 	for (int i = 0; i < SHAPE_COUNT; i++)
 	{
 		Model *m = Model::emptyModel(*m_program, POINT_COUNT * sizeof(glm::vec3), false);
@@ -89,11 +116,26 @@ int SuperformulaScene::initialize()
 		m_models.push_back(m);
 	}
 
+	Asset3DModel fsQuad = AssetLoader::getInstance().getFullscreenQuad();
+	m_backgroundModel = Model::emptyModel(*m_backgroundProgram, fsQuad.vertices.size() * sizeof(glm::vec3));
+	m_backgroundModel->bufferVertexData(&(fsQuad.vertices[0]), fsQuad.vertices.size() * sizeof(glm::vec3));
+
 	return 0;
+}
+
+void SuperformulaScene::activate()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void SuperformulaScene::update()
 {
+	if (m_app.getInputContext().actionActivated(SonoroAction::RELOAD_ASSETS))
+	{
+		reloadShaders();
+	}
+
 	m_msCounter += m_app.getRenderContext().getDeltaMs();
 
 	updateParams();
@@ -165,6 +207,22 @@ void SuperformulaScene::update()
 
 void SuperformulaScene::draw()
 {
+	// Draw Background
+	m_app.getRenderContext().useProgram(*m_backgroundProgram);
+
+	m_backgroundModel->bindVao();
+
+	m_backgroundProgram->setUniform4fv("u_inColor", glm::vec4(0.0f, 0.0f, 0.0f, 0.2f));
+	m_app.getRenderContext().drawArrays(m_backgroundModel->m_drawType, m_backgroundModel->m_drawStart, m_backgroundModel->m_drawCount);
+
+	m_backgroundModel->unbindVao();
+
+	m_app.getRenderContext().stopProgram();
+
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	// Draw Shapes
+
 	m_app.getRenderContext().useProgram(*m_program);
 
 	for (int i = 0; i < SHAPE_COUNT; i++)
@@ -174,7 +232,7 @@ void SuperformulaScene::draw()
 
 		model->bindVao();
 
-		glm::vec4 color(params.red, params.grn, params.blu, 1);
+		glm::vec4 color(params.red, params.grn, params.blu, 1.0f);
 
 		m_program->setUniformMatrix4fv("u_camera", m_cam.getViewMatrix());
 		m_program->setUniform4fv("u_inColor", color);
@@ -259,4 +317,32 @@ float SuperformulaScene::superformula(SuperformulaParams &params, float angle)
 	l = powf(l, params.n3);
 
 	return powf(r + l, -1 / n1);
+}
+
+void SuperformulaScene::reloadShaders()
+{
+	std::vector<Program::ShaderInfo> shaders =
+	{
+		{ "resources/default.vert", GL_VERTEX_SHADER },
+		{ "resources/default.frag", GL_FRAGMENT_SHADER }
+	};
+
+	Program *prog = new Program(shaders);
+	if (prog->load())
+	{
+		std::cerr << "TestScene: error reloading shader:" << std::endl;
+		std::cerr << prog->getError() << std::endl;
+		delete prog;
+		return;
+	}
+
+	delete m_program;
+	m_program = prog;
+
+	for (Model *m : m_models)
+	{
+		m->m_program = m_program;
+	}
+
+	std::cout << "Shaders reloaded." << std::endl;
 }
