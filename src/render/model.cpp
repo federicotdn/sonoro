@@ -1,5 +1,6 @@
 #include <model.h>
 #include <asset_loader.h>
+#include <cassert>
 
 #define OBJ_VERTEX_IN_ATTRIB "i_vert"
 #define OBJ_NORMAL_IN_ATTRIB "i_normal"
@@ -117,6 +118,8 @@ Model::~Model()
 
 void Model::bufferVertexData(const void *data, size_t size)
 {
+	assert((GLint)size == m_drawCount);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_vertexVbo);
 	glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
