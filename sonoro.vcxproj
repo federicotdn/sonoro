@@ -122,7 +122,6 @@
     <ClCompile Include="src\input\input_context.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\render\camera.cpp" />
-    <ClCompile Include="src\render\lines.cpp" />
     <ClCompile Include="src\render\model.cpp" />
     <ClCompile Include="src\render\program.cpp" />
     <ClCompile Include="src\render\render_context.cpp" />
@@ -154,7 +153,6 @@
     <ClInclude Include="include\circular_array.h" />
     <ClInclude Include="include\constants.h" />
     <ClInclude Include="include\input_context.h" />
-    <ClInclude Include="include\lines.h" />
     <ClInclude Include="include\line_scene.h" />
     <ClInclude Include="include\math_utils.h" />
     <ClInclude Include="include\menu.h" />
