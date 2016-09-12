@@ -111,22 +111,16 @@ int SuperformulaScene::initialize()
 
 	for (int i = 0; i < SHAPE_COUNT; i++)
 	{
-		Model *m = Model::emptyModel(*m_program, POINT_COUNT * sizeof(glm::vec3), false);
+		Model *m = Model::emptyModel(*m_program, POINT_COUNT, false);
 		m->m_drawType = GL_LINE_STRIP;
 		m_models.push_back(m);
 	}
 
 	Asset3DModel fsQuad = AssetLoader::getInstance().getFullscreenQuad();
-	m_backgroundModel = Model::emptyModel(*m_backgroundProgram, fsQuad.vertices.size() * sizeof(glm::vec3));
-	m_backgroundModel->bufferVertexData(&(fsQuad.vertices[0]), fsQuad.vertices.size() * sizeof(glm::vec3));
+	m_backgroundModel = Model::emptyModel(*m_backgroundProgram, fsQuad.vertices.size());
+	m_backgroundModel->bufferVertexData(&(fsQuad.vertices[0]), fsQuad.vertices.size());
 
 	return 0;
-}
-
-void SuperformulaScene::activate()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void SuperformulaScene::update()
@@ -207,6 +201,8 @@ void SuperformulaScene::update()
 
 void SuperformulaScene::draw()
 {
+	glClear(GL_DEPTH_BUFFER_BIT);
+
 	// Draw Background
 	m_app.getRenderContext().useProgram(*m_backgroundProgram);
 
@@ -237,7 +233,7 @@ void SuperformulaScene::draw()
 		m_program->setUniformMatrix4fv("u_camera", m_cam.getViewMatrix());
 		m_program->setUniform4fv("u_inColor", color);
 
-		model->bufferVertexData(params.m_points, POINT_COUNT * sizeof(glm::vec3));
+		model->bufferVertexData(params.m_points, POINT_COUNT);
 
 		m_app.getRenderContext().drawArrays(model->m_drawType, model->m_drawStart, model->m_drawCount);
 

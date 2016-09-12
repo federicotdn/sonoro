@@ -17,15 +17,12 @@ namespace so
 		Model *getModel() { return m_model; }
 
 	private:
-		Lines(Model *model, size_t count) :
-			m_model(model),
-			m_count(count),
-			m_thickness(1.0f)
-		{ }
+		Lines(Model *model, size_t count);
 
 		Model *m_model;
 		size_t m_count;
 		float m_thickness;
+		std::vector<glm::vec3> m_pointsBuf;
 	};
 }
 

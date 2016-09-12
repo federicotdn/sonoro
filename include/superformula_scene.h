@@ -30,7 +30,6 @@ namespace so
 		~SuperformulaScene();
 
 		int initialize() override;
-		void activate() override;
 		void update() override;
 		void draw() override;
 

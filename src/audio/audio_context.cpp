@@ -4,7 +4,7 @@
 #include <math.h>
 #include <limits>
 
-#define MAX_BPM 160.0f
+#define MAX_BPM 180.0f
 #define MIN_MS_BETWEEN_BEATS (60000.0f / MAX_BPM)
 
 using namespace so;
@@ -369,17 +369,6 @@ void AudioContext::processSamples(uint32_t deltaMs)
 	m_frequencyAmplitudes.max = maxSample;
 	m_frequencyAmplitudes.min = minSample;
 	m_frequencyAmplitudes.mean = mean;
-
-	//for (int i = 0; i < AC_OUT_SIZE; i++)
-	//{
-	//	m_processedSamples[i] -= minSample;
-	//	float denominator = maxSample - minSample;
-	//	if (denominator == 0)
-	//	{
-	//		denominator = 1;
-	//	}
-	//	m_processedSamples[i] /= denominator;
-	//}
 }
 
 float AudioContext::sampleToDb(fftwf_complex c)
