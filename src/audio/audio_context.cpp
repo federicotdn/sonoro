@@ -4,7 +4,7 @@
 #include <math.h>
 #include <limits>
 
-#define MAX_BPM 180.0f
+#define MAX_BPM 130.0f
 #define MIN_MS_BETWEEN_BEATS (60000.0f / MAX_BPM)
 
 using namespace so;

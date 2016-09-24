@@ -19,6 +19,7 @@
 #define MAX_SPIKE_LEN 250
 #define SPIKE_STEP 5.0f
 #define SPIKE_JUMP 95.0f
+#define MAX_LINE_WIDTH 5.0f
 
 using namespace so;
 
@@ -31,7 +32,8 @@ SuperformulaScene::SuperformulaScene(Sonoro & app) :
 	m_spikeLen(MIN_SPIKE_LEN),
 	m_program(nullptr),
 	m_backgroundModel(nullptr),
-	m_backgroundProgram(nullptr)
+	m_backgroundProgram(nullptr),
+	m_drawBackground(true)
 {
 	// m: rotational symmetry
 	// n1, n2, n3: form
@@ -123,11 +125,21 @@ int SuperformulaScene::initialize()
 	return 0;
 }
 
+void SuperformulaScene::activate()
+{
+	glLineWidth(1);
+}
+
 void SuperformulaScene::update()
 {
 	if (m_app.getInputContext().actionActivated(SonoroAction::RELOAD_ASSETS))
 	{
 		reloadShaders();
+	}
+
+	if (m_app.getInputContext().actionActivated(SonoroAction::UP))
+	{
+		m_drawBackground = !m_drawBackground;
 	}
 
 	m_msCounter += m_app.getRenderContext().getDeltaMs();
@@ -173,6 +185,10 @@ void SuperformulaScene::update()
 	m_spikeLen += -SPIKE_STEP + (beat ? SPIKE_JUMP : 0);
 	m_spikeLen = (float)MathUtils::clamp<int>(MIN_SPIKE_LEN, MAX_SPIKE_LEN, (int)m_spikeLen);
 
+	GLfloat lineWidth = (sinf((float)m_app.getRenderContext().getTicks() / 700.0f) + 1) / 2.0f;
+	lineWidth = 1 + lineWidth * MAX_LINE_WIDTH;
+	glLineWidth(lineWidth);
+
 	for (int j = 0; j < SHAPE_COUNT; j++)
 	{
 		SuperformulaParams &params = m_params[j];
@@ -201,21 +217,24 @@ void SuperformulaScene::update()
 
 void SuperformulaScene::draw()
 {
-	glClear(GL_DEPTH_BUFFER_BIT);
+	m_app.getRenderContext().clearScreen(GL_DEPTH_BUFFER_BIT);
 
-	// Draw Background
-	m_app.getRenderContext().useProgram(*m_backgroundProgram);
+	if (m_drawBackground)
+	{
+		// Draw Background
+		m_app.getRenderContext().useProgram(*m_backgroundProgram);
 
-	m_backgroundModel->bindVao();
+		m_backgroundModel->bindVao();
 
-	m_backgroundProgram->setUniform4fv("u_inColor", glm::vec4(0.0f, 0.0f, 0.0f, 0.2f));
-	m_app.getRenderContext().drawArrays(m_backgroundModel->m_drawType, m_backgroundModel->m_drawStart, m_backgroundModel->m_drawCount);
+		m_backgroundProgram->setUniform4fv("u_inColor", glm::vec4(0.0f, 0.0f, 0.0f, 0.2f));
+		m_app.getRenderContext().drawArrays(m_backgroundModel->m_drawType, m_backgroundModel->m_drawStart, m_backgroundModel->m_drawCount);
 
-	m_backgroundModel->unbindVao();
+		m_backgroundModel->unbindVao();
 
-	m_app.getRenderContext().stopProgram();
+		m_app.getRenderContext().stopProgram();
 
-	glClear(GL_DEPTH_BUFFER_BIT);
+		m_app.getRenderContext().clearScreen(GL_DEPTH_BUFFER_BIT);
+	}
 
 	// Draw Shapes
 

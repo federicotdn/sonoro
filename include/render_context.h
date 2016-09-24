@@ -27,6 +27,10 @@ namespace so
 		std::string getGLInfoString();
 		uint32_t getTicks();
 
+		void enableClearBit(GLbitfield bits);
+		void disableClearBit(GLbitfield bits);
+		void clearScreen(GLbitfield bits);
+
 		void setDeltaMs(uint32_t ms) { m_deltaMs = ms; }
 		uint32_t getDeltaMs() { return m_deltaMs; }
 
@@ -42,6 +46,7 @@ namespace so
 		bool m_fullscreen;
 		GLuint m_activeProgram;
 		uint32_t m_deltaMs;
+		GLbitfield m_clearMask;
 	};
 }
 

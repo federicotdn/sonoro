@@ -10,7 +10,8 @@ RenderContext::RenderContext() :
 	m_initialized(false),
 	m_fullscreen(false),
 	m_activeProgram(0),
-	m_deltaMs(0)
+	m_deltaMs(0),
+	m_clearMask(0)
 {
 }
 
@@ -72,6 +73,8 @@ int RenderContext::initialize(int win_width, int win_height)
 	glDepthFunc(GL_LEQUAL);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	enableClearBit(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	m_initialized = true;
 	return 0;
 }
@@ -89,6 +92,22 @@ std::string RenderContext::getGLInfoString()
 uint32_t RenderContext::getTicks()
 {
 	return (uint32_t)(glfwGetTime() * 1000);
+}
+
+void RenderContext::enableClearBit(GLbitfield bits)
+{
+	m_clearMask = m_clearMask | bits;
+}
+
+void RenderContext::disableClearBit(GLbitfield bits)
+{
+	m_clearMask = m_clearMask & (~bits);
+}
+
+void RenderContext::clearScreen(GLbitfield bits)
+{
+	bits = bits & m_clearMask;
+	glClear(bits);
 }
 
 int RenderContext::getWindowHeight()

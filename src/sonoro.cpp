@@ -169,7 +169,8 @@ int Sonoro::run()
 		}
 		else
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			m_renderContext.enableClearBit(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			m_renderContext.clearScreen(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		}
 
 		GLFWwindow *win = m_renderContext.getWindow();

@@ -30,6 +30,7 @@ namespace so
 		~SuperformulaScene();
 
 		int initialize() override;
+		void activate() override;
 		void update() override;
 		void draw() override;
 
@@ -54,6 +55,7 @@ namespace so
 		bool m_inTransition;
 		uint32_t m_msCounter;
 		float m_spikeLen;
+		bool m_drawBackground;
 	};
 }
 
