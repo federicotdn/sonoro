@@ -11,7 +11,7 @@
 #define BEATS_PER_SHAPE 10
 
 #define MEAN_DELTA_TOLERANCE 0.1f
-#define RADIUS_MULTIPLIER 300.0f
+#define RADIUS_MULTIPLIER 350.0f
 #define MIN_VISIBLE_RADIUS 1.0f
 #define MAX_VISIBLE_RADIUS 1000.0f
 
@@ -19,7 +19,6 @@
 #define MAX_SPIKE_LEN 250
 #define SPIKE_STEP 5.0f
 #define SPIKE_JUMP 95.0f
-#define MAX_LINE_WIDTH 5.0f
 
 using namespace so;
 
@@ -33,7 +32,8 @@ SuperformulaScene::SuperformulaScene(Sonoro & app) :
 	m_program(nullptr),
 	m_backgroundModel(nullptr),
 	m_backgroundProgram(nullptr),
-	m_drawBackground(true)
+	m_drawBackground(true),
+	m_framebufferProgram(nullptr)
 {
 	// m: rotational symmetry
 	// n1, n2, n3: form
@@ -56,6 +56,8 @@ SuperformulaScene::SuperformulaScene(Sonoro & app) :
 		m_params[i].rotDirection = i % 2 == 0 ? 1 : -1;
 		m_lastParams[i] = m_params[i];
 	}
+
+	m_framebuffer.initialize(w, h);
 }
 
 SuperformulaScene::~SuperformulaScene()
@@ -79,35 +81,47 @@ SuperformulaScene::~SuperformulaScene()
 	{
 		delete m_backgroundProgram;
 	}
+
+	if (m_backgroundFboModel != nullptr)
+	{
+		delete m_backgroundFboModel;
+	}
+
+	if (m_framebufferProgram != nullptr)
+	{
+		delete m_framebufferProgram;
+	}
 }
 
 int SuperformulaScene::initialize()
 {
-	std::vector<Program::ShaderInfo> shaders =
+	if (!m_framebuffer.ready())
 	{
-		{ "resources/default.vert", GL_VERTEX_SHADER },
-		{ "resources/default.frag", GL_FRAGMENT_SHADER }
-	};
+		std::cerr << "SuperformulaScene: unable to create framebuffer." << std::endl;
+		return -1;
+	}
 
-	m_program = new Program(shaders);
+	m_program = Program::loadFrom("res/default.vert", "res/default.frag");
 	if (m_program->load())
 	{
-		std::cerr << "TestScene: error loading shader:" << std::endl;
+		std::cerr << "SuperformulaScene: error loading shader:" << std::endl;
 		std::cerr << m_program->getError() << std::endl;
 		return -1;
 	}
 
-	std::vector<Program::ShaderInfo> backgroundShaders =
-	{
-		{ "resources/fullscreen.vert", GL_VERTEX_SHADER },
-		{ "resources/fullscreen.frag", GL_FRAGMENT_SHADER }
-	};
-
-	m_backgroundProgram = new Program(backgroundShaders);
+	m_backgroundProgram = Program::loadFrom("res/fullscreen.vert", "res/fullscreen.frag");
 	if (m_backgroundProgram->load())
 	{
-		std::cerr << "TestScene: error loading background shader:" << std::endl;
+		std::cerr << "SuperformulaScene: error loading background shader:" << std::endl;
 		std::cerr << m_backgroundProgram->getError() << std::endl;
+		return -1;
+	}
+
+	m_framebufferProgram = Program::loadFrom("res/fullscreentex.vert", "res/fullscreentex.frag");
+	if (m_framebufferProgram->load())
+	{
+		std::cerr << "SuperformulaScene: error loading framebuffer shader:" << std::endl;
+		std::cerr << m_framebufferProgram->getError() << std::endl;
 		return -1;
 	}
 
@@ -122,12 +136,16 @@ int SuperformulaScene::initialize()
 	m_backgroundModel = Model::emptyModel(*m_backgroundProgram, fsQuad.vertices.size());
 	m_backgroundModel->bufferVertexData(&(fsQuad.vertices[0]), fsQuad.vertices.size());
 
+	m_backgroundFboModel = Model::emptyModel(*m_framebufferProgram, fsQuad.vertices.size());
+	m_backgroundFboModel->bufferVertexData(&(fsQuad.vertices[0]), fsQuad.vertices.size());
+	m_backgroundFboModel->bufferUvData(&(fsQuad.uvs[0]), fsQuad.uvs.size());
+
 	return 0;
 }
 
 void SuperformulaScene::activate()
 {
-	glLineWidth(1);
+	glLineWidth(5);
 }
 
 void SuperformulaScene::update()
@@ -185,10 +203,6 @@ void SuperformulaScene::update()
 	m_spikeLen += -SPIKE_STEP + (beat ? SPIKE_JUMP : 0);
 	m_spikeLen = (float)MathUtils::clamp<int>(MIN_SPIKE_LEN, MAX_SPIKE_LEN, (int)m_spikeLen);
 
-	GLfloat lineWidth = (sinf((float)m_app.getRenderContext().getTicks() / 700.0f) + 1) / 2.0f;
-	lineWidth = 1 + lineWidth * MAX_LINE_WIDTH;
-	glLineWidth(lineWidth);
-
 	for (int j = 0; j < SHAPE_COUNT; j++)
 	{
 		SuperformulaParams &params = m_params[j];
@@ -217,28 +231,32 @@ void SuperformulaScene::update()
 
 void SuperformulaScene::draw()
 {
-	m_app.getRenderContext().clearScreen(GL_DEPTH_BUFFER_BIT);
+	RenderContext &rc = m_app.getRenderContext();
+
+	rc.bindFramebuffer(m_framebuffer.getFramebuffer());
+
+	rc.clearScreen(GL_DEPTH_BUFFER_BIT);
 
 	if (m_drawBackground)
 	{
 		// Draw Background
-		m_app.getRenderContext().useProgram(*m_backgroundProgram);
+		rc.useProgram(*m_backgroundProgram);
 
 		m_backgroundModel->bindVao();
 
 		m_backgroundProgram->setUniform4fv("u_inColor", glm::vec4(0.0f, 0.0f, 0.0f, 0.2f));
-		m_app.getRenderContext().drawArrays(m_backgroundModel->m_drawType, m_backgroundModel->m_drawStart, m_backgroundModel->m_drawCount);
+		rc.drawArrays(m_backgroundModel->m_drawType, m_backgroundModel->m_drawStart, m_backgroundModel->m_drawCount);
 
 		m_backgroundModel->unbindVao();
 
-		m_app.getRenderContext().stopProgram();
+		rc.stopProgram();
 
-		m_app.getRenderContext().clearScreen(GL_DEPTH_BUFFER_BIT);
+		rc.clearScreen(GL_DEPTH_BUFFER_BIT);
 	}
 
 	// Draw Shapes
 
-	m_app.getRenderContext().useProgram(*m_program);
+	rc.useProgram(*m_program);
 
 	for (int i = 0; i < SHAPE_COUNT; i++)
 	{
@@ -254,12 +272,26 @@ void SuperformulaScene::draw()
 
 		model->bufferVertexData(params.m_points, POINT_COUNT);
 
-		m_app.getRenderContext().drawArrays(model->m_drawType, model->m_drawStart, model->m_drawCount);
+		rc.drawArrays(model->m_drawType, model->m_drawStart, model->m_drawCount);
 
 		model->unbindVao();
 	}
 
-	m_app.getRenderContext().stopProgram();
+	rc.stopProgram();
+	rc.bindDefaultFramebuffer();
+
+	rc.clearScreen(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+	rc.bindTexture(GL_TEXTURE0, m_framebuffer.getTexture());
+
+	rc.useProgram(*m_framebufferProgram);
+
+	m_backgroundFboModel->bindVao();
+	m_framebufferProgram->setUniform1i("u_tex", 0);
+	rc.drawArrays(m_backgroundFboModel->m_drawType, m_backgroundFboModel->m_drawStart, m_backgroundFboModel->m_drawCount);
+	m_backgroundFboModel->unbindVao();
+
+	rc.stopProgram();
 }
 
 void SuperformulaScene::updateParams()
@@ -336,21 +368,16 @@ float SuperformulaScene::superformula(SuperformulaParams &params, float angle)
 
 void SuperformulaScene::reloadShaders()
 {
-	std::vector<Program::ShaderInfo> shaders =
-	{
-		{ "resources/default.vert", GL_VERTEX_SHADER },
-		{ "resources/default.frag", GL_FRAGMENT_SHADER }
-	};
-
-	Program *prog = new Program(shaders);
+	Program *prog = Program::loadFrom("res/default.vert", "res/default.frag");
 	if (prog->load())
 	{
-		std::cerr << "TestScene: error reloading shader:" << std::endl;
+		std::cerr << "SuperformulaScene: error reloading shader:" << std::endl;
 		std::cerr << prog->getError() << std::endl;
 		delete prog;
 		return;
 	}
 
+	m_app.getRenderContext().stopProgram();
 	delete m_program;
 	m_program = prog;
 

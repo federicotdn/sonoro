@@ -40,6 +40,7 @@ int RenderContext::initialize(int win_width, int win_height)
 		return -1;
 	}
 
+	// Use OpenGL 3.2, GLSL #version 150
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -108,6 +109,23 @@ void RenderContext::clearScreen(GLbitfield bits)
 {
 	bits = bits & m_clearMask;
 	glClear(bits);
+}
+
+void RenderContext::bindFramebuffer(GLuint fb)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, fb);
+}
+
+void RenderContext::bindDefaultFramebuffer()
+{
+	bindFramebuffer(0);
+}
+
+void RenderContext::bindTexture(GLenum unit, GLuint texture)
+{
+	glActiveTexture(unit);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glActiveTexture(0);
 }
 
 int RenderContext::getWindowHeight()

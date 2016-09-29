@@ -20,6 +20,8 @@ TestScene::TestScene(Sonoro &app) :
 
 TestScene::~TestScene()
 {
+	delete m_obj.getModel();
+
 	if (m_program != nullptr)
 	{
 		delete m_program;
@@ -28,13 +30,7 @@ TestScene::~TestScene()
 
 int TestScene::initialize()
 {
-	std::vector<Program::ShaderInfo> shaders =
-	{
-		{ "resources/default.vert", GL_VERTEX_SHADER },
-		{ "resources/default.frag", GL_FRAGMENT_SHADER }
-	};
-
-	m_program = new Program(shaders);
+	m_program = Program::loadFrom("res/default.vert", "res/default.frag");
 	if (m_program->load())
 	{
 		std::cerr << "TestScene: error loading shader:" << std::endl;
@@ -42,13 +38,11 @@ int TestScene::initialize()
 		return -1;
 	}
 
-	Model *model = Model::fromOBJFile("resources/cube.obj", *m_program);
+	Model *model = Model::fromOBJFile("res/cube.obj", *m_program);
 	m_obj.setModel(model);
 
 	return 0;
 }
-
-#include <iostream>
 
 void TestScene::update()
 {

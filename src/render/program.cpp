@@ -20,6 +20,17 @@ Program::~Program()
 	}
 }
 
+Program *Program::loadFrom(std::string vertPath, std::string fragPath)
+{
+	std::vector<Program::ShaderInfo> shaders =
+	{
+		{ vertPath, GL_VERTEX_SHADER },
+		{ fragPath, GL_FRAGMENT_SHADER }
+	};
+
+	return new Program(shaders);
+}
+
 int Program::load()
 {
 	if (m_shaderList.size() == 0)
@@ -176,5 +187,14 @@ void Program::setUniform4fv(std::string name, const glm::vec4 &vec)
 	if (location != -1)
 	{
 		glUniform4fv(location, 1, glm::value_ptr(vec));
+	}
+}
+
+void Program::setUniform1i(std::string name, GLint val)
+{
+	GLint location = uniformLocation(name);
+	if (location != 0)
+	{
+		glUniform1i(location, val);
 	}
 }

@@ -171,6 +171,7 @@ int Sonoro::run()
 		{
 			m_renderContext.enableClearBit(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_renderContext.clearScreen(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			m_renderContext.bindDefaultFramebuffer();
 		}
 
 		GLFWwindow *win = m_renderContext.getWindow();
@@ -182,6 +183,8 @@ int Sonoro::run()
 		
 		done |= glfwWindowShouldClose(win) == 0 ? false : true;
 	}
+
+	m_renderContext.stopProgram();
 
 	// Delete scenes
 	for (auto it = scenes.begin(); it != scenes.end(); it++)

@@ -20,6 +20,8 @@ namespace so
 		Program(std::vector<ShaderInfo> shaderList);
 		~Program();
 
+		static Program *loadFrom(std::string vertPath, std::string fragPath);
+
 		int load();
 		std::string getError() { return m_error; }
 		bool isReady() { return m_object != 0; }
@@ -31,6 +33,7 @@ namespace so
 
 		void setUniformMatrix4fv(std::string name, const glm::mat4 &mat);
 		void setUniform4fv(std::string name, const glm::vec4 &vec);
+		void setUniform1i(std::string name, GLint val);
 
 	private:
 		std::vector<ShaderInfo> m_shaderList;

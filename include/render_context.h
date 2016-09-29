@@ -31,6 +31,11 @@ namespace so
 		void disableClearBit(GLbitfield bits);
 		void clearScreen(GLbitfield bits);
 
+		void bindFramebuffer(GLuint fb);
+		void bindDefaultFramebuffer();
+		
+		void bindTexture(GLenum unit, GLuint texture);
+
 		void setDeltaMs(uint32_t ms) { m_deltaMs = ms; }
 		uint32_t getDeltaMs() { return m_deltaMs; }
 

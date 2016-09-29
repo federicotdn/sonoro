@@ -96,12 +96,20 @@ Asset3DModel AssetLoader::getFullscreenQuad()
 	Asset3DModel asset;
 
 	asset.vertices.emplace_back(-1.0f, 1.0f, 0.0f);
-	asset.vertices.emplace_back(1.0f, 1.0f, 0.0f);
 	asset.vertices.emplace_back(-1.0f, -1.0f, 0.0f);
-
-	asset.vertices.emplace_back(-1.0f, -1.0f, 0.0f);
-	asset.vertices.emplace_back(1.0f, 1.0f, 0.0f);
 	asset.vertices.emplace_back(1.0f, -1.0f, 0.0f);
+
+	asset.vertices.emplace_back(-1.0f, 1.0f, 0.0f);
+	asset.vertices.emplace_back(1.0f, -1.0f, 0.0f);
+	asset.vertices.emplace_back(1.0f, 1.0f, 0.0f);
+
+	asset.uvs.emplace_back(0.0f, 1.0f);
+	asset.uvs.emplace_back(0.0f, 0.0f);
+	asset.uvs.emplace_back(1.0f, 0.0f);
+
+	asset.uvs.emplace_back(0.0f, 1.0f);
+	asset.uvs.emplace_back(1.0f, 0.0f);
+	asset.uvs.emplace_back(1.0f, 1.0f);
 
 	return asset;
 }

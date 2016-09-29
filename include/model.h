@@ -14,6 +14,7 @@ namespace so
 		~Model();
 		
 		void bufferVertexData(const void *data, size_t size);
+		void bufferUvData(const void *data, size_t size);
 
 		Program *m_program;
 		GLuint m_vao;
@@ -21,6 +22,8 @@ namespace so
 		GLint m_drawCount;
 		GLint m_drawStart;
 		GLuint m_vertexVbo;
+		GLuint m_uvVbo;
+		GLenum m_usage;
 
 		void bindVao();
 		void unbindVao();
@@ -32,7 +35,9 @@ namespace so
 			m_drawType(GL_TRIANGLES),
 			m_drawCount(0),
 			m_drawStart(0),
-			m_vertexVbo(0)
+			m_vertexVbo(0),
+			m_uvVbo(0),
+			m_usage(0)
 		{}
 
 		std::vector<GLuint> m_vbos;

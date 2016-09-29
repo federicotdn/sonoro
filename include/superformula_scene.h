@@ -2,13 +2,14 @@
 #define SUPERFORMULA_H
 
 #define POINT_COUNT 500
-#define MEAN_HIST_SIZE 10
+#define MEAN_HIST_SIZE 5
 
 #define SHAPE_COUNT 5
 
 #include <scene.h>
 #include <camera.h>
 #include <model.h>
+#include <framebuffer.h>
 #include <glm/vec3.hpp>
 
 namespace so
@@ -46,6 +47,10 @@ namespace so
 
 		Model *m_backgroundModel;
 		Program *m_backgroundProgram;
+
+		Model *m_backgroundFboModel;
+		Program *m_framebufferProgram;
+		Framebuffer m_framebuffer;
 
 		float m_lastMeans[MEAN_HIST_SIZE];
 		SuperformulaParams m_params[SHAPE_COUNT];
