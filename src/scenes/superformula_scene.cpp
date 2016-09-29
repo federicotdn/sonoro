@@ -368,23 +368,18 @@ float SuperformulaScene::superformula(SuperformulaParams &params, float angle)
 
 void SuperformulaScene::reloadShaders()
 {
-	Program *prog = Program::loadFrom("res/default.vert", "res/default.frag");
+	Program *prog = Program::loadFrom("res/fullscreentex.vert", "res/fullscreentex.frag");
 	if (prog->load())
 	{
-		std::cerr << "SuperformulaScene: error reloading shader:" << std::endl;
+		std::cerr << "Error reloading framebuffer shader:" << std::endl;
 		std::cerr << prog->getError() << std::endl;
-		delete prog;
+		std::cerr << "================================================" << std::endl;
 		return;
 	}
 
 	m_app.getRenderContext().stopProgram();
-	delete m_program;
-	m_program = prog;
-
-	for (Model *m : m_models)
-	{
-		m->m_program = m_program;
-	}
+	delete m_framebufferProgram;
+	m_framebufferProgram = prog;
 
 	std::cout << "Shaders reloaded." << std::endl;
 }
