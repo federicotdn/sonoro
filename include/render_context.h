@@ -16,7 +16,7 @@ namespace so
 		RenderContext();
 		~RenderContext();
 		
-		int initialize(int win_width, int win_height);
+		int initialize(int win_width, int win_height, bool fullscreen);
 		std::string getError() { return m_error; }
 		
 		GLFWwindow *getWindow() { return m_window; }

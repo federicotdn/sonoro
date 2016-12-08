@@ -198,3 +198,12 @@ void Program::setUniform1i(std::string name, GLint val)
 		glUniform1i(location, val);
 	}
 }
+
+void Program::setUniform1ui(std::string name, GLuint val)
+{
+	GLint location = uniformLocation(name);
+	if (location != 0)
+	{
+		glUniform1ui(location, val);
+	}
+}

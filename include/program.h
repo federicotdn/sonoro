@@ -34,6 +34,7 @@ namespace so
 		void setUniformMatrix4fv(std::string name, const glm::mat4 &mat);
 		void setUniform4fv(std::string name, const glm::vec4 &vec);
 		void setUniform1i(std::string name, GLint val);
+		void setUniform1ui(std::string name, GLuint val);
 
 	private:
 		std::vector<ShaderInfo> m_shaderList;

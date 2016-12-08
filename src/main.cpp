@@ -7,10 +7,26 @@
 
 int main(int, char**)
 {
+	std::cout << "Sonoro build 1" << std::endl;
 	std::cout << "Starting..." << std::endl;
 
+	int w = 0, h = 0;
+	char c = 0;
+
+	std::cout << "Enter resolution Width:" << std::endl;
+	std::cin >> w;
+	std::cout << "Enter resolution Height:" << std::endl;
+	std::cin >> h;
+	std::cout << "Use fullscreen? [y/n]: ";
+	std::cin >> c;
+
+	if (w == 0 || h == 0) {
+		std::cerr << "Invalid resolution" << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	so::RenderContext renderContext;
-	if (renderContext.initialize(1024, 768))
+	if (renderContext.initialize(w, h, c == 'y'))
 	{
 		std::cerr << "Error intializing render context: " << renderContext.getError() << std::endl;
 		return EXIT_FAILURE;

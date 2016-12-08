@@ -288,6 +288,7 @@ void SuperformulaScene::draw()
 
 	m_backgroundFboModel->bindVao();
 	m_framebufferProgram->setUniform1i("u_tex", 0);
+	m_framebufferProgram->setUniform1ui("u_ticks", rc.getTicks());
 	rc.drawArrays(m_backgroundFboModel->m_drawType, m_backgroundFboModel->m_drawStart, m_backgroundFboModel->m_drawCount);
 	m_backgroundFboModel->unbindVao();
 

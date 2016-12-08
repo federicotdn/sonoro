@@ -26,7 +26,7 @@ RenderContext::~RenderContext()
 	glfwTerminate();
 }
 
-int RenderContext::initialize(int win_width, int win_height)
+int RenderContext::initialize(int win_width, int win_height, bool fullscreen)
 {
 	if (m_initialized)
 	{
@@ -46,7 +46,12 @@ int RenderContext::initialize(int win_width, int win_height)
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	m_window = glfwCreateWindow(win_width, win_height, APPLICATION_NAME, nullptr, nullptr);
+	GLFWmonitor* monitor = nullptr;
+	if (fullscreen) {
+		monitor = glfwGetPrimaryMonitor();
+	}
+	
+	m_window = glfwCreateWindow(win_width, win_height, APPLICATION_NAME, monitor, nullptr);
 	if (!m_window)
 	{
 		m_error = "Unable to create GLFW window.";
@@ -144,6 +149,7 @@ int RenderContext::getWindowWidth()
 
 void RenderContext::setFullscreen(bool enabled)
 {
+	//TODO: Immplement
 	//SDL_SetWindowFullscreen(m_window, enabled ? SDL_WINDOW_FULLSCREEN : 0);
 	m_fullscreen = enabled;
 }

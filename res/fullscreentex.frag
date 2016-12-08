@@ -1,11 +1,13 @@
 #version 150
 
 uniform sampler2D u_tex;
+uniform uint u_ticks;
+
 in vec2 o_fragTexCoord;
 out vec4 o_finalColor;
 
 /* Misc variables */
-float offset = 1.0 / 400;
+float offset = 1.0 / 100;
 vec2 offsets[9] = vec2[](
 	vec2(-offset, offset),  // top-left
 	vec2(0.0f,    offset),  // top-center
@@ -55,13 +57,14 @@ void main() {
 		col += sampleTex[i] * edgeKernel[i];
 	}
 	
-    //o_finalColor = vec4(col, 1.0);
+	/* use kernel */
+    o_finalColor = vec4(col, 1.0);
 
 	/* No effect */
-	o_finalColor = texture(u_tex, o_fragTexCoord);
+	//o_finalColor = texture(u_tex, o_fragTexCoord);
 	
 	/* Invert colors */
-	//o_finalColor = vec4(vec3(1.0 - texture(u_tex, o_fragTexCoord)), 1.0);
+	//o_finalColor = vec4(vec3(1 - o_finalColor.x, 1 - o_finalColor.y, 1 - o_finalColor.z), 1.0);
 	
 	/* Grayscale */
 	vec4 color = o_finalColor;
